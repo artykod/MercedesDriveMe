@@ -26,7 +26,8 @@ public class LevelsManager : MonoBehaviour {
     }
 
 	private void LoadRandomLevel() {
-		LoadLevel(Random.Range(0, levelsPrefabs.Length));
+		//LoadLevel(Random.Range(0, levelsPrefabs.Length));
+		LoadLevel(0);
 	}
 
 	private void OnGUI() {
