@@ -19,30 +19,43 @@ public class BackgroundVisual : MonoBehaviour {
 				url = "file://" + Application.dataPath + "/StreamingAssets";
 #endif
 				return url;
-            }
+			}
 		}
 
 		public virtual void Initialize(BackgroundVisual visualOwner, System.Action onInitialized) {
 			owner = visualOwner;
 			meshRenderer = visualOwner.GetComponent<MeshRenderer>();
+			meshRenderer.enabled = false;
 			onInitializedCallback = onInitialized;
-
-			InitializeInternal();
-        }
+		}
 
 		public virtual void Play(bool loop) {
 			// stub
 		}
 
 		public virtual void Destroy() {
-			meshRenderer.sharedMaterial.mainTexture = null;
+			if (meshRenderer != null) {
+				meshRenderer.enabled = false;
+				Texture texture = meshRenderer.sharedMaterial.mainTexture;
+				if (texture != null) {
+					DestroyImmediate(texture, false);
+				}
+				meshRenderer.sharedMaterial.mainTexture = null;
+			}
 		}
 
-		protected virtual void InitializeInternal() {
+		public void LoadBackground(string backgroundName) {
+			Destroy();
+			LoadBackgroundInternal(backgroundName);
+		}
+
+		protected virtual void LoadBackgroundInternal(string backgroundName) {
+
 			string pathToMovies = StreamingAssetsUrl + "/Images/";
 
-			owner.StartCoroutine(LoadMovie(pathToMovies + "level_1.png", delegate (Texture2D loadedTexture, string error) {
+			owner.StartCoroutine(LoadMovie(pathToMovies + backgroundName + ".png", delegate (Texture2D loadedTexture, string error) {
 				meshRenderer.sharedMaterial.mainTexture = loadedTexture;
+				meshRenderer.enabled = true;
 				onInitializedCallback();
 			}));
 		}
@@ -58,6 +71,7 @@ public class BackgroundVisual : MonoBehaviour {
 
 				if (string.IsNullOrEmpty(error)) {
 					texture = loader.texture;
+					texture.name = "fakeMovieTexture";
 				} else {
 					Debug.LogErrorFormat("WWW loading failed: file = {0} error = {1}", path, error);
 				}
@@ -71,20 +85,25 @@ public class BackgroundVisual : MonoBehaviour {
 	private class VisualVideo : VisualAbstract {
 		private MovieTexture movie = null;
 
-		protected override void InitializeInternal() {
+		protected override void LoadBackgroundInternal(string backgroundName) {
+
 			string pathToMovies = StreamingAssetsUrl + "/Movies/";
 
-			owner.StartCoroutine(LoadMovie(pathToMovies + "level_1.ogv", delegate(MovieTexture loadedMovie, string error) {
+			owner.StartCoroutine(LoadMovie(pathToMovies + backgroundName + ".ogv", delegate(MovieTexture loadedMovie, string error) {
 				movie = loadedMovie;
                 meshRenderer.sharedMaterial.mainTexture = movie;
+				meshRenderer.enabled = true;
 				onInitializedCallback();
             }));
 		}
 
 		public override void Play(bool loop) {
 			base.Play(loop);
-			movie.loop = loop;
-			movie.Play();
+
+			if (movie != null) {
+				movie.loop = loop;
+				movie.Play();
+			}
 		}
 
 		private IEnumerator LoadMovie(string path, System.Action<MovieTexture, string> receiver) {
@@ -98,6 +117,7 @@ public class BackgroundVisual : MonoBehaviour {
 
 				if (string.IsNullOrEmpty(error)) {
 					movie = loader.movie;
+					movie.name = "movieTexture";
 
 					while (!movie.isReadyToPlay) {
 						yield return null;
@@ -119,8 +139,14 @@ public class BackgroundVisual : MonoBehaviour {
 		visual = new VisualAbstract();
 #endif
 
-		visual.Initialize(this, delegate {
-			visual.Play(true);
-		});
+		visual.Initialize(this, PlayLoadedBackground);
+	}
+
+	private void PlayLoadedBackground() {
+		visual.Play(true);
+	}
+
+	public void LoadBackground(string backgroundName) {
+		visual.LoadBackground(backgroundName);
 	}
 }
