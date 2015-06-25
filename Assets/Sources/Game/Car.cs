@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Car : MonoBehaviour {
 	private Rigidbody2D body = null;
 	private new Transform transform = null;
 	private Vector2 lastTarget = Vector2.zero;
 	private bool onTarget = false;
+	private bool canMove = false;
 
 	[SerializeField]
 	private LineDrawer lineDrawer = null;
@@ -14,9 +16,26 @@ public class Car : MonoBehaviour {
 		body = GetComponent<Rigidbody2D>();
 
 		lastTarget = transform.position;
+
+		canMove = false;
+		StartCoroutine(WaitLevelStartPosition());
+	}
+
+	private IEnumerator WaitLevelStartPosition() {
+		while (Level.StartPoint == null) {
+			yield return null;
+		}
+		canMove = true;
+        transform.position = Level.StartPoint.position;
+		transform.rotation = Level.StartPoint.rotation;
+		lastTarget = transform.position;
 	}
 
 	private void Update() {
+		if (!canMove) {
+			return;
+		}
+
 		if (lineDrawer.HasPoints) {
 			lastTarget = lineDrawer.FirstPoint;
 			onTarget = true;
@@ -70,6 +89,10 @@ public class Car : MonoBehaviour {
 	}
 
 	private void OnTriggerEnter2D(Collider2D collider) {
+		if (!canMove) {
+			return;
+		}
+
 		if (collider.gameObject.layer == LayerMask.NameToLayer("Checkpoint")) {
 			Level.CheckpointCollide(collider);
 		}

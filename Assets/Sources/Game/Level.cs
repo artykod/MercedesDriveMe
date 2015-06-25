@@ -1,17 +1,27 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Level : MonoBehaviour {
 	[SerializeField]
 	private int laps = 3;
+	[SerializeField]
+	private Transform startPoint = null;
 
 	private static Level instance = null;
 	private CircleCollider2D[] checkpoints = null;
 	private int lapsDone = 0;
 	private float lapTime = 0f;
+	private bool raceDone = false;
 
 	public static void CheckpointCollide(Collider2D checkpoint) {
 		if (instance != null) {
 			instance.CheckpointCollideCheck(checkpoint);
+		}
+	}
+
+	public static Transform StartPoint {
+		get {
+			return instance != null ? instance.startPoint : null;
 		}
 	}
 
@@ -29,6 +39,10 @@ public class Level : MonoBehaviour {
 
 	private string LapTime() {
 		float time = Time.time - lapTime;
+
+		if (raceDone) {
+			time = lapTime;
+		}
 
 		int lapMinutes = (int)(time / 60f);
 		int lapSeconds = (int)(time - lapMinutes * 60f);
@@ -48,16 +62,20 @@ public class Level : MonoBehaviour {
 
 						Debug.LogFormat("Lap done: {0} time: {1}", lapsDone, LapTime());
 
-						lapTime = Time.time;
-
 						foreach (var ch in checkpoints) {
 							ch.enabled = true;
 						}
 
 						if (lapsDone >= 3) {
 							Debug.Log("Race done");
-							Application.LoadLevel("menu");
+							raceDone = true;
+							lapTime = Time.time - lapTime;
+							StartCoroutine(ShowMenu());
+
+							return;
 						}
+
+						lapTime = Time.time;
 
 						return;
 					}
@@ -66,10 +84,16 @@ public class Level : MonoBehaviour {
 		}
 	}
 
+	private IEnumerator ShowMenu() {
+		yield return new WaitForSeconds(2f);
+		Application.LoadLevel("menu");
+	}
+
 	private void Awake() {
 		instance = this;
 		checkpoints = GetComponentsInChildren<CircleCollider2D>();
 
 		lapTime = Time.time;
+		raceDone = false;
     }
 }

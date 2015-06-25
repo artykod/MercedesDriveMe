@@ -185,6 +185,7 @@ GameObject:
   - 114: {fileID: 399890780}
   - 114: {fileID: 399890779}
   - 114: {fileID: 399890782}
+  - 114: {fileID: 399890783}
   m_Layer: 5
   m_Name: lapTime
   m_TagString: Untagged
@@ -265,6 +266,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3907ec6f49ee914a88edd2a05fc4f8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &399890783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 399890777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: .602999985}
+  m_EffectDistance: {x: 2, y: -2}
+  m_UseGraphicAlpha: 1
 --- !u!114 &645745232 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 11403794, guid: 6436b8d0c4d22ca409de0ae4314cc076,
@@ -580,6 +595,7 @@ GameObject:
   - 114: {fileID: 1829394573}
   - 114: {fileID: 1829394572}
   - 114: {fileID: 1829394576}
+  - 114: {fileID: 1829394577}
   m_Layer: 5
   m_Name: lapsCount
   m_TagString: Untagged
@@ -660,6 +676,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54cf80c4d89a034280ca8f2c9160baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1829394577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1829394571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: .602999985}
+  m_EffectDistance: {x: 2, y: -2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &2033097663
 GameObject:
   m_ObjectHideFlags: 0

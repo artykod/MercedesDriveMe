@@ -8,6 +8,8 @@ public class LevelsManager : MonoBehaviour {
 
 	private GameObject currentLevel = null;
 
+	private static int currentLevelIndex = -1;
+
 	public void LoadLevel(int index) {
 		if (currentLevel != null) {
 			DestroyImmediate(currentLevel, false);
@@ -22,12 +24,20 @@ public class LevelsManager : MonoBehaviour {
 	private void Start() {
 		Random.seed = (int)System.DateTime.Now.Ticks;
 
+		if (currentLevelIndex < 0) {
+			currentLevelIndex = Random.Range(0, levelsPrefabs.Length);
+		}
+
 		LoadRandomLevel();
     }
 
 	private void LoadRandomLevel() {
 		//LoadLevel(Random.Range(0, levelsPrefabs.Length));
-		LoadLevel(0);
+		//LoadLevel(0);
+		LoadLevel(currentLevelIndex++);
+		if (currentLevelIndex >= levelsPrefabs.Length) {
+			currentLevelIndex = 0;
+		}
 	}
 
 	private void OnGUI() {
@@ -35,8 +45,8 @@ public class LevelsManager : MonoBehaviour {
 			return;
 		}
 
-		if (GUI.Button(new Rect(Screen.width - 100f, 0f, 100f, 64f), "Next level")) {
-			LoadRandomLevel();
+		if (GUI.Button(new Rect(Screen.width - 100f, 0f, 100f, 64f), "Main menu")) {
+			Application.LoadLevel("menu");
         }
 	}
 }
