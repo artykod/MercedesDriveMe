@@ -104,7 +104,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 470906}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - 50: {fileID: 5024878}
   - 60: {fileID: 6068580}
   - 114: {fileID: 11430686}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: level_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1169,6 +1169,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

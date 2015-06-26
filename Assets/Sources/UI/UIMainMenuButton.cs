@@ -15,11 +15,13 @@ public class UIMainMenuButton : MonoBehaviour, IPointerClickHandler {
 	void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
 		switch (type) {
 		case ButtonType.OnePlayer:
-			Application.LoadLevel("main");
+			GameCore.GameMode = GameCore.GameModes.OnePlayer;
 			break;
 		case ButtonType.TwoPlayers:
-			//
+			GameCore.GameMode = GameCore.GameModes.TwoPlayers;
 			break;
 		}
+
+		Application.LoadLevel("main");
 	}
 }

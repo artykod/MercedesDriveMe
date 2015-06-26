@@ -2,16 +2,53 @@
 using System.Collections;
 
 public class Car : MonoBehaviour {
+
+	public enum CarType {
+		Red,
+		Blue,
+	}
+
+	[SerializeField]
+	private CarType type = CarType.Red;
+	[SerializeField]
+	private Color lineColor = Color.white;
+
 	private Rigidbody2D body = null;
 	private new Transform transform = null;
 	private Vector2 lastTarget = Vector2.zero;
 	private bool onTarget = false;
 	private bool canMove = false;
 
-	[SerializeField]
+	public CarType Type {
+		get {
+			return type;
+		}
+	}
+
+	public Color LineColor {
+		get {
+			return lineColor;
+		}
+	}
+
+	public LineDrawer LineDrawer {
+		get {
+			return lineDrawer;
+		}
+		set {
+			lineDrawer = value;
+		}
+	}
+	
 	private LineDrawer lineDrawer = null;
 
 	private void Awake() {
+
+		if (GameCore.GameMode == GameCore.GameModes.OnePlayer && type == CarType.Blue) {
+			Destroy(gameObject);
+			return;
+		}
+
 		transform = base.transform;
 		body = GetComponent<Rigidbody2D>();
 
@@ -36,9 +73,13 @@ public class Car : MonoBehaviour {
 			return;
 		}
 
-		if (lineDrawer.HasPoints) {
-			lastTarget = lineDrawer.FirstPoint;
-			onTarget = true;
+		if (lineDrawer != null) {
+			if (lineDrawer.HasPoints) {
+				lastTarget = lineDrawer.FirstPoint;
+				onTarget = true;
+			}
+		} else {
+			onTarget = false;
 		}
 
         Vector2 target = lastTarget;
@@ -69,22 +110,26 @@ public class Car : MonoBehaviour {
 		body.angularVelocity = 0f;
 
 		if (distance < 0.7f) {
-			if (lineDrawer.HasPoints) {
+			if (lineDrawer != null && lineDrawer.HasPoints) {
 				if (!lineDrawer.RemoveFirst() || lineDrawer.PointsCount < 3) {
-					lastTarget = transform.position;
-					body.velocity *= 0.75f;
-
-					onTarget = true;
-
-					if (!lineDrawer.IsUnderControl) {
-						lineDrawer.Clear();
-					}
-				}
+					TargetCompleted();
+                }
 
 				//lineDrawer.FirstPoint = transform.position;
 			} else {
 				onTarget = false;
 			}
+		}
+	}
+
+	private void TargetCompleted() {
+		lastTarget = transform.position;
+		body.velocity *= 0.75f;
+
+		onTarget = true;
+
+		if (lineDrawer != null && !lineDrawer.IsUnderControl) {
+			lineDrawer.Clear();
 		}
 	}
 

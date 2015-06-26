@@ -2,6 +2,17 @@
 
 public class GameCore : MonoBehaviour {
 
+	public enum GameModes {
+		OnePlayer,
+		OnePlayerWithBot,
+		TwoPlayers,
+	}
+
+	public static GameModes GameMode {
+		get;
+		set;
+	}
+
 	private static bool initialized = false;
 
 	[RuntimeInitializeOnLoadMethod]

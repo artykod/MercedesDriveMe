@@ -33,8 +33,8 @@ public class LevelsManager : MonoBehaviour {
 
 	private void LoadRandomLevel() {
 		//LoadLevel(Random.Range(0, levelsPrefabs.Length));
-		//LoadLevel(0);
-		LoadLevel(currentLevelIndex++);
+		LoadLevel(1);
+		//LoadLevel(currentLevelIndex++);
 		if (currentLevelIndex >= levelsPrefabs.Length) {
 			currentLevelIndex = 0;
 		}
