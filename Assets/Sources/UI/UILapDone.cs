@@ -2,6 +2,9 @@
 using UnityEngine.UI;
 
 public class UILapDone : MonoBehaviour {
+	[SerializeField]
+	private Car.CarType carType = Car.CarType.Red;
+
 	private Text text = null;
 
 	private void Awake() {
@@ -9,6 +12,12 @@ public class UILapDone : MonoBehaviour {
 	}
 
 	private void Update() {
-		text.text = "Lap " + Level.CurrentLap() + " / " + Level.TotalLaps();
+		Car car = Car.CarByType(carType);
+
+		if (car == null) {
+			return;
+		}
+
+		text.text = "Lap " + car.CurrentLap() + " / " + Level.TotalLaps();
 	}
 }

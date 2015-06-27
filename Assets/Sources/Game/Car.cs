@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Car : MonoBehaviour {
 
@@ -13,11 +14,27 @@ public class Car : MonoBehaviour {
 	[SerializeField]
 	private Color lineColor = Color.white;
 
+	private static Dictionary<CarType, Car> allCars = new Dictionary<CarType, Car>();
+
 	private Rigidbody2D body = null;
 	private new Transform transform = null;
 	private Vector2 lastTarget = Vector2.zero;
 	private bool goToTarget = false;
 	private bool canMove = false;
+	private LineDrawer lineDrawer = null;
+
+	private int lapsDone = 0;
+	private float lapTime = 0f;
+	private bool raceDone = false;
+
+	private CircleCollider2D[] checkpoints = null;
+	private bool[] checkpointsEnabled = null;
+
+	public static Car CarByType(CarType carType) {
+		Car car = null;
+		allCars.TryGetValue(carType, out car);
+		return car;
+	}
 
 	public CarType Type {
 		get {
@@ -50,10 +67,68 @@ public class Car : MonoBehaviour {
 			return goToTarget;
 		}
 	}
-	
-	private LineDrawer lineDrawer = null;
+
+	public string CurrentLapTime() {
+		return LapTime();
+	}
+
+	public int CurrentLap() {
+		return lapsDone;
+	}
+
+	private string LapTime() {
+		float time = Level.LevelStarted ? Time.time - lapTime : 0f;
+
+		if (raceDone) {
+			time = lapTime;
+		}
+
+		int lapMinutes = (int)(time / 60f);
+		int lapSeconds = (int)(time - lapMinutes * 60f);
+		int lapMillis = (int)(time * 100f - lapSeconds * 100f);
+
+		return string.Format("{0:00}:{1:00}:{2:000}", lapMinutes, lapSeconds, lapMillis);
+	}
+
+	private void CheckpointCollideCheck(Collider2D checkpoint) {
+		for (int i = 0; i < checkpoints.Length; i++) {
+			if (checkpoints[i] == checkpoint) {
+				if (i == 0 || !checkpointsEnabled[i - 1]) {
+					checkpointsEnabled[i] = false;
+
+					if (i == checkpoints.Length - 1) {
+						lapsDone++;
+
+						Debug.LogFormat("Lap done: {0} time: {1}", lapsDone, LapTime());
+						
+						for (int ch = 0; ch < checkpointsEnabled.Length; ch++) {
+							checkpointsEnabled[ch] = true;
+						}
+
+						if (lapsDone >= 3) {
+							Debug.Log("Race done, car = " + gameObject.name, this);
+							raceDone = true;
+							lapTime = Time.time - lapTime;
+
+							//StartCoroutine(ShowMenu());
+
+							return;
+						}
+
+						lapTime = Time.time;
+
+						return;
+					}
+				}
+			}
+		}
+	}
 
 	private void Awake() {
+
+		allCars[type] = this;
+
+		raceDone = false;
 
 		if (GameCore.GameMode == GameCore.GameModes.OnePlayer && type == CarType.Blue) {
 			Destroy(gameObject);
@@ -92,6 +167,13 @@ public class Car : MonoBehaviour {
 			yield return null;
 		}
 
+		checkpoints = Level.Checkpoints;
+		checkpointsEnabled = new bool[checkpoints.Length];
+		for (int i = 0; i < checkpointsEnabled.Length; i++) {
+			checkpointsEnabled[i] = true;
+		}
+
+		lapTime = Time.time;
 		canMove = true;
 	}
 
@@ -178,7 +260,7 @@ public class Car : MonoBehaviour {
 		}
 
 		if (collider.gameObject.layer == LayerMask.NameToLayer("Checkpoint")) {
-			Level.CheckpointCollide(collider);
+			CheckpointCollideCheck(collider);
 		}
 	}
 }

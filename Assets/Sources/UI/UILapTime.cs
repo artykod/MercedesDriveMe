@@ -2,6 +2,9 @@
 using UnityEngine.UI;
 
 public class UILapTime : MonoBehaviour {
+	[SerializeField]
+	private Car.CarType carType = Car.CarType.Red;
+
 	private Text text = null;
 
 	private void Awake() {
@@ -9,6 +12,12 @@ public class UILapTime : MonoBehaviour {
 	}
 
 	private void Update () {
-		text.text = "Lap time " + Level.CurrentLapTime();
+		Car car = Car.CarByType(carType);
+
+		if (car == null) {
+			return;
+		}
+
+		text.text = "Lap time " + car.CurrentLapTime();
 	}
 }

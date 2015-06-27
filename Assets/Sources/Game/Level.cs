@@ -18,17 +18,14 @@ public class Level : MonoBehaviour {
 	private SpriteRenderer splashRenderer = null;
 	private SpriteRenderer tutorialRenderer = null;
 	private CircleCollider2D[] checkpoints = null;
-	private int lapsDone = 0;
-	private float lapTime = 0f;
-	private bool raceDone = false;
 	private bool levelStarted = false;
 
 	private GameObject splashObject = null;
 	private GameObject tutorialObject = null;
 
-	public static void CheckpointCollide(Collider2D checkpoint) {
-		if (instance != null) {
-			instance.CheckpointCollideCheck(checkpoint);
+	public static CircleCollider2D[] Checkpoints {
+		get {
+			return instance != null ? instance.checkpoints : null;
 		}
 	}
 
@@ -50,63 +47,8 @@ public class Level : MonoBehaviour {
 		}
 	}
 
-	public static string CurrentLapTime() {
-		return instance != null && LevelStarted ? instance.LapTime() : "00:00:000";
-	}
-
-	public static int CurrentLap() {
-		return instance != null && LevelStarted ? instance.lapsDone : 0;
-	}
-
 	public static int TotalLaps() {
 		return instance != null ? instance.laps : 0;
-	}
-
-	private string LapTime() {
-		float time = Time.time - lapTime;
-
-		if (raceDone) {
-			time = lapTime;
-		}
-
-		int lapMinutes = (int)(time / 60f);
-		int lapSeconds = (int)(time - lapMinutes * 60f);
-		int lapMillis = (int)(time * 100f - lapSeconds * 100f);
-
-		return string.Format("{0:00}:{1:00}:{2:000}", lapMinutes, lapSeconds, lapMillis);
-	}
-
-	private void CheckpointCollideCheck(Collider2D checkpoint) {
-		for (int i = 0; i < checkpoints.Length; i++) {
-			if (checkpoints[i] == checkpoint) {
-				if (i == 0 || !checkpoints[i - 1].enabled) {
-					checkpoints[i].enabled = false;
-
-					if (i == checkpoints.Length - 1) {
-						lapsDone++;
-
-						Debug.LogFormat("Lap done: {0} time: {1}", lapsDone, LapTime());
-
-						foreach (var ch in checkpoints) {
-							ch.enabled = true;
-						}
-
-						if (lapsDone >= 3) {
-							Debug.Log("Race done");
-							raceDone = true;
-							lapTime = Time.time - lapTime;
-							StartCoroutine(ShowMenu());
-
-							return;
-						}
-
-						lapTime = Time.time;
-
-						return;
-					}
-                }
-			}
-		}
 	}
 
 	private IEnumerator ShowMenu() {
@@ -139,12 +81,13 @@ public class Level : MonoBehaviour {
 			yield return null;
 		}
 
-		time = 0f;
-		while (time > 0f) {
+		time = 0.25f;
+		float current = time;
+		while (current > 0f) {
 			Color c = tutorialRenderer.color;
-			c.a = time;
+			c.a = current / time;
 			tutorialRenderer.color = c;
-			time -= Time.deltaTime;
+			current -= Time.deltaTime;
 			yield return null;
 		}
 
@@ -156,9 +99,6 @@ public class Level : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 		checkpoints = GetComponentsInChildren<CircleCollider2D>();
-
-		lapTime = Time.time;
-		raceDone = false;
 
 		splashObject = new GameObject("splash");
 		Transform lt = splashObject.transform;
