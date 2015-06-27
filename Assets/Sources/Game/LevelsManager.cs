@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
 public class LevelsManager : MonoBehaviour {
+
+	public static readonly bool EMPTY_LEVEL = false;
+
 	[SerializeField]
 	private BackgroundVisual backgroundVisual = null;
 	[SerializeField]
@@ -32,6 +35,10 @@ public class LevelsManager : MonoBehaviour {
     }
 
 	private void LoadRandomLevel() {
+		if (EMPTY_LEVEL) {
+			return;
+		}
+
 		//LoadLevel(Random.Range(0, levelsPrefabs.Length));
 		//LoadLevel(1);
 		LoadLevel(currentLevelIndex++);

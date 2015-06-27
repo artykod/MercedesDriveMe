@@ -16,13 +16,18 @@ public class Car : MonoBehaviour {
 	private Rigidbody2D body = null;
 	private new Transform transform = null;
 	private Vector2 lastTarget = Vector2.zero;
-	private bool onTarget = false;
+	private bool goToTarget = false;
 	private bool canMove = false;
 
 	public CarType Type {
 		get {
 			return type;
 		}
+	}
+
+	public bool IsBot {
+		get;
+		private set;
 	}
 
 	public Color LineColor {
@@ -47,6 +52,8 @@ public class Car : MonoBehaviour {
 		if (GameCore.GameMode == GameCore.GameModes.OnePlayer && type == CarType.Blue) {
 			Destroy(gameObject);
 			return;
+		} else if (GameCore.GameMode == GameCore.GameModes.OnePlayerWithBot && type == CarType.Blue) {
+			IsBot = true;
 		}
 
 		transform = base.transform;
@@ -59,8 +66,12 @@ public class Car : MonoBehaviour {
 	}
 
 	private IEnumerator WaitLevelStartPosition() {
-		while (Level.StartPoint == null) {
+		if (LevelsManager.EMPTY_LEVEL) {
 			yield return null;
+		} else {
+			while (Level.StartPoint == null) {
+				yield return null;
+			}
 		}
 		canMove = true;
 		if (Level.StartPoint != null) {
@@ -68,8 +79,6 @@ public class Car : MonoBehaviour {
 			transform.rotation = Level.StartPoint.rotation;
 		}
 		lastTarget = transform.position;
-
-		yield break;
 	}
 
 	private void Update() {
@@ -80,10 +89,12 @@ public class Car : MonoBehaviour {
 		if (lineDrawer != null) {
 			if (lineDrawer.HasPoints) {
 				lastTarget = lineDrawer.FirstPoint;
-				onTarget = true;
+				goToTarget = true;
 			}
 		} else {
-			onTarget = false;
+			if (!IsBot) {
+				goToTarget = false;
+			}
 		}
 
         Vector2 target = lastTarget;
@@ -91,7 +102,7 @@ public class Car : MonoBehaviour {
 		Vector2 dir = target - new Vector2(transform.position.x, transform.position.y);
 		float distance = dir.magnitude;
 
-		if (onTarget && Mathf.Abs(distance) > 0.0001f) {
+		if (goToTarget && Mathf.Abs(distance) > 0.0001f) {
 			float velocityMagnitude = Mathf.Min(10f, distance * 20f);
 			float dot = Vector2.Dot(rotation, (dir / distance) * velocityMagnitude);
 			Vector2 proj = rotation * dot;
@@ -121,8 +132,16 @@ public class Car : MonoBehaviour {
 
 				//lineDrawer.FirstPoint = transform.position;
 			} else {
-				onTarget = false;
+				if (!IsBot) {
+					goToTarget = false;
+				}
 			}
+		}
+
+		if (body.velocity.magnitude < 0.1f && Mathf.Abs(body.angularVelocity) < 1f && LineDrawer != null && LineDrawer.HasPoints) {
+			if (!IsBot) {
+				TargetCompleted();
+            }
 		}
 	}
 
@@ -130,10 +149,11 @@ public class Car : MonoBehaviour {
 		lastTarget = transform.position;
 		body.velocity *= 0.75f;
 
-		onTarget = true;
+		goToTarget = false;
 
 		if (lineDrawer != null && !lineDrawer.IsUnderControl) {
 			lineDrawer.Clear();
+			lineDrawer = null;
 		}
 	}
 

@@ -15,7 +15,7 @@ public class UIMainMenuButton : MonoBehaviour, IPointerClickHandler {
 	void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
 		switch (type) {
 		case ButtonType.OnePlayer:
-			GameCore.GameMode = GameCore.GameModes.OnePlayer;
+			GameCore.GameMode = GameCore.GameModes.OnePlayerWithBot;
 			break;
 		case ButtonType.TwoPlayers:
 			GameCore.GameMode = GameCore.GameModes.TwoPlayers;

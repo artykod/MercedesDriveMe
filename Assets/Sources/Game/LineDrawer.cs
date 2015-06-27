@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using TouchInfo = TouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
+
+	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = false;
+
 	private LineRenderer line = null;
 	private LinkedList<Vector2> points = new LinkedList<Vector2>();
 	private int lineVerticesCount = 0;
@@ -47,6 +50,7 @@ public class LineDrawer : MonoBehaviour {
 			controledCar.LineDrawer = null;
 		}
 
+		controledCar = null;
 		TouchInfo = null;
 	}
 
@@ -101,12 +105,12 @@ public class LineDrawer : MonoBehaviour {
 
 		if (touchInfoLocal == null) {
 			return;
-		} else {
-			pointer = touchInfoLocal.position;
-			isTouchDown = touchInfoLocal.isTouchDown;
-			isTouch = touchInfoLocal.isTouch;
-			isTouchUp = touchInfoLocal.isTouchUp;
 		}
+
+		pointer = touchInfoLocal.position;
+		isTouchDown = touchInfoLocal.isTouchDown;
+		isTouch = touchInfoLocal.isTouch;
+		isTouchUp = touchInfoLocal.isTouchUp;
 
 		if (controledCar != null) {
 			controledCar.LineDrawer = this;
@@ -117,7 +121,7 @@ public class LineDrawer : MonoBehaviour {
 			}
 		}
 
-		if (isTouchDown) {
+		if (isTouchDown && controledCar == null) {
 			Clear();
 
 			Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0.05f);
@@ -140,15 +144,10 @@ public class LineDrawer : MonoBehaviour {
 					IsUnderControl = true;
 					points.AddFirst(pointer);
 					points.AddLast(pointer);
-
 					canDraw = true;
 				}
 			}
         }
-
-		if (TouchInfo == null) {
-			return;
-		}
 
 		if (isTouch && canDraw && controledCar != null) {
 			if (points.Count > 1) {
@@ -170,13 +169,15 @@ public class LineDrawer : MonoBehaviour {
 				line.SetPosition(points.Count - 1, pointer);
 			}
 
-			Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0f);
-			if (colliders != null && colliders.Length > 0) {
-				int layer = LayerMask.NameToLayer("Level");
-				foreach (var c in colliders) {
-					if (c.gameObject.layer == layer) {
-						isTouchUp = true;
-						break;
+			if (BREAK_LINE_ON_LEVEL_COLLISION) {
+				Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0f);
+				if (colliders != null && colliders.Length > 0) {
+					int layer = LayerMask.NameToLayer("Level");
+					foreach (var c in colliders) {
+						if (c.gameObject.layer == layer) {
+							isTouchUp = true;
+							break;
+						}
 					}
 				}
 			}
