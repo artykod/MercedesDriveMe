@@ -4,7 +4,7 @@ using TouchInfo = TouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
 
-	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = false;
+	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = true;
 	private const float CAR_CATCH_PRECISION = 0.1f;
 
 	private LineRenderer line = null;
@@ -92,6 +92,10 @@ public class LineDrawer : MonoBehaviour {
 	}
 
 	private void Update() {
+		if (!Level.LevelStarted) {
+			return;
+		}
+
 		Vector2 pointer = Vector2.zero;
 		bool isTouchDown = false;
 		bool isTouch = false;

@@ -12,12 +12,22 @@ public class UILapDone : MonoBehaviour {
 	}
 
 	private void Update() {
+		if (!Level.IsTutorialDone) {
+			text.text = "";
+			return;
+		}
+
 		Car car = Car.CarByType(carType);
 
 		if (car == null) {
 			return;
 		}
 
-		text.text = "Lap " + car.CurrentLap() + " / " + Level.TotalLaps();
+		if (car.IsBot) {
+			gameObject.SetActive(false);
+			return;
+		}
+
+		text.text = "КРУГ " + (car.CurrentLap() + 1) + " / " + Level.TotalLaps();
 	}
 }

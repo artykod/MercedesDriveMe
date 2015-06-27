@@ -23,6 +23,16 @@ public class Level : MonoBehaviour {
 	private GameObject splashObject = null;
 	private GameObject tutorialObject = null;
 
+	private float startTime = 3f;
+
+	private bool raceDone = false;
+
+	public static float StartTime {
+		get {
+			return instance != null ? instance.startTime : 3f;
+		}
+	}
+
 	public static CircleCollider2D[] Checkpoints {
 		get {
 			return instance != null ? instance.checkpoints : null;
@@ -51,6 +61,11 @@ public class Level : MonoBehaviour {
 		return instance != null ? instance.laps : 0;
 	}
 
+	public static bool IsTutorialDone {
+		get;
+		private set;
+	}
+
 	private IEnumerator ShowMenu() {
 		levelStarted = false;
 
@@ -59,6 +74,8 @@ public class Level : MonoBehaviour {
 	}
 
 	private IEnumerator StartLevel() {
+		IsTutorialDone = false;
+
 		yield return new WaitForSeconds(1f);
 
 		tutorialRenderer.enabled = true;
@@ -92,8 +109,23 @@ public class Level : MonoBehaviour {
 		}
 
 		tutorialRenderer.enabled = false;
+		IsTutorialDone = true;
+
+		startTime = 4f;
+        while (startTime > 0f) {
+			startTime -= Time.deltaTime;
+			yield return null;
+			if (startTime < 1f) {
+				startTime = 0f;
+			}
+		}
 
 		levelStarted = true;
+
+		while (startTime > -0.5f) {
+			startTime -= Time.deltaTime;
+			yield return null;
+		}
 	}
 
 	private void Awake() {
@@ -120,4 +152,22 @@ public class Level : MonoBehaviour {
 
 		StartCoroutine(StartLevel());
     }
+
+	private void Update() {
+		if (!raceDone) {
+			bool allDone = true;
+
+			foreach (var i in Car.AllCars()) {
+				if (!i.RaceDone) {
+					allDone = false;
+					break;
+				}
+			}
+
+			if (allDone) {
+				StartCoroutine(ShowMenu());
+				raceDone = true;
+			}
+		}
+	}
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Car : MonoBehaviour {
 
@@ -36,6 +37,10 @@ public class Car : MonoBehaviour {
 		return car;
 	}
 
+	public static Car[] AllCars() {
+		return allCars.Values.ToArray();
+	}
+
 	public CarType Type {
 		get {
 			return type;
@@ -45,6 +50,12 @@ public class Car : MonoBehaviour {
 	public bool IsBot {
 		get;
 		private set;
+	}
+
+	public bool RaceDone {
+		get {
+			return raceDone;
+		}
 	}
 
 	public Color LineColor {
@@ -73,7 +84,7 @@ public class Car : MonoBehaviour {
 	}
 
 	public int CurrentLap() {
-		return lapsDone;
+		return lapsDone >= Level.TotalLaps() ? Level.TotalLaps() - 1 : lapsDone;
 	}
 
 	private string LapTime() {
@@ -85,7 +96,7 @@ public class Car : MonoBehaviour {
 
 		int lapMinutes = (int)(time / 60f);
 		int lapSeconds = (int)(time - lapMinutes * 60f);
-		int lapMillis = (int)(time * 100f - lapSeconds * 100f);
+		int lapMillis = (int)((time - lapSeconds - lapMinutes * 60f) * 100f);
 
 		return string.Format("{0:00}:{1:00}:{2:000}", lapMinutes, lapSeconds, lapMillis);
 	}
@@ -105,9 +116,13 @@ public class Car : MonoBehaviour {
 							checkpointsEnabled[ch] = true;
 						}
 
-						if (lapsDone >= 3) {
+						if (lapsDone >= Level.TotalLaps()) {
 							Debug.Log("Race done, car = " + gameObject.name, this);
 							raceDone = true;
+
+							//canMove = false;
+							TargetCompleted();
+
 							lapTime = Time.time - lapTime;
 
 							//StartCoroutine(ShowMenu());
@@ -115,7 +130,7 @@ public class Car : MonoBehaviour {
 							return;
 						}
 
-						lapTime = Time.time;
+						//lapTime = Time.time;
 
 						return;
 					}
@@ -125,9 +140,6 @@ public class Car : MonoBehaviour {
 	}
 
 	private void Awake() {
-
-		allCars[type] = this;
-
 		raceDone = false;
 
 		if (GameCore.GameMode == GameCore.GameModes.OnePlayer && type == CarType.Blue) {
@@ -136,6 +148,8 @@ public class Car : MonoBehaviour {
 		} else if (GameCore.GameMode == GameCore.GameModes.OnePlayerWithBot && type == CarType.Blue) {
 			IsBot = true;
 		}
+
+		allCars[type] = this;
 
 		transform = base.transform;
 		body = GetComponent<Rigidbody2D>();

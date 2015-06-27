@@ -11,13 +11,26 @@ public class UILapTime : MonoBehaviour {
 		text = GetComponent<Text>();
 	}
 
-	private void Update () {
-		Car car = Car.CarByType(carType);
-
-		if (car == null) {
+	private void Update() {
+		if (!Level.IsTutorialDone) {
+			text.text = "";
 			return;
 		}
 
-		text.text = "Lap time " + car.CurrentLapTime();
+		if (Level.StartTime > -0.5f) {
+			int value = (int)Level.StartTime;
+			if (value <= 0) {
+				text.text = "ВПЕРЕД!";
+			} else {
+				text.text = value.ToString();
+			}
+			return;
+		}
+
+		Car car = Car.CarByType(carType);
+		if (car == null) {
+			return;
+		}
+		text.text = car.CurrentLapTime();
 	}
 }
