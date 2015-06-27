@@ -9,7 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 476604}
   m_Layer: 10
-  m_Name: start (2)
+  m_Name: start_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,6 +146,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &191522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 405924}
+  m_Layer: 10
+  m_Name: start_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &403958
 Transform:
   m_ObjectHideFlags: 1
@@ -157,7 +172,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 6
+  m_RootOrder: 8
 --- !u!4 &403988
 Transform:
   m_ObjectHideFlags: 1
@@ -169,7 +184,19 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 1
+  m_RootOrder: 3
+--- !u!4 &405924
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 191522}
+  m_LocalRotation: {x: 0, y: 0, z: -.727840841, w: .685746193}
+  m_LocalPosition: {x: 1.54900002, y: -2.30200005, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 411446}
+  m_RootOrder: 0
 --- !u!4 &411446
 Transform:
   m_ObjectHideFlags: 1
@@ -180,6 +207,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 405924}
+  - {fileID: 476604}
   - {fileID: 451414}
   - {fileID: 403988}
   - {fileID: 455318}
@@ -187,7 +216,6 @@ Transform:
   - {fileID: 479652}
   - {fileID: 425674}
   - {fileID: 403958}
-  - {fileID: 476604}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &425674
@@ -201,7 +229,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 5
+  m_RootOrder: 7
 --- !u!4 &442706
 Transform:
   m_ObjectHideFlags: 1
@@ -213,7 +241,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 3
+  m_RootOrder: 5
 --- !u!4 &451414
 Transform:
   m_ObjectHideFlags: 1
@@ -225,7 +253,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 0
+  m_RootOrder: 2
 --- !u!4 &455318
 Transform:
   m_ObjectHideFlags: 1
@@ -237,19 +265,19 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 2
+  m_RootOrder: 4
 --- !u!4 &476604
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100352}
-  m_LocalRotation: {x: 0, y: 0, z: -.700473487, w: .71367842}
-  m_LocalPosition: {x: .699999988, y: -2.6099999, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: -.721519828, w: .692393839}
+  m_LocalPosition: {x: 1.52199996, y: -2.74399996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 7
+  m_RootOrder: 1
 --- !u!4 &479652
 Transform:
   m_ObjectHideFlags: 1
@@ -261,7 +289,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411446}
-  m_RootOrder: 4
+  m_RootOrder: 6
 --- !u!50 &5024878
 Rigidbody2D:
   serializedVersion: 2
@@ -772,8 +800,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laps: 3
-  startPoint: {fileID: 476604}
+  startPoint1: {fileID: 405924}
+  startPoint2: {fileID: 476604}
   levelSplashSprite: {fileID: 21300000, guid: d75b6536d79eaad4a980464cb344046c, type: 3}
+  levelTutorialSprite: {fileID: 21300000, guid: c64fd161ded5b6c4b903d9693dbee373,
+    type: 3}
 --- !u!212 &21269692
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -824,6 +855,11 @@ Prefab:
       propertyPath: levelSplashSprite
       value: 
       objectReference: {fileID: 21300000, guid: d75b6536d79eaad4a980464cb344046c,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: levelTutorialSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c64fd161ded5b6c4b903d9693dbee373,
         type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

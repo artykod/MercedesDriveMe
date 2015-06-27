@@ -4,7 +4,8 @@ using TouchInfo = TouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
 
-	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = true;
+	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = false;
+	private const float CAR_CATCH_PRECISION = 0.1f;
 
 	private LineRenderer line = null;
 	private LinkedList<Vector2> points = new LinkedList<Vector2>();
@@ -131,7 +132,7 @@ public class LineDrawer : MonoBehaviour {
 			Collider2D[] colliders = null;
 
 			if (controledCar != null && controledCar.LineDrawer == this) {
-				colliders = Physics2D.OverlapCircleAll(pointer, 0f);
+				colliders = Physics2D.OverlapCircleAll(pointer, CAR_CATCH_PRECISION);
 				foreach (var c in colliders) {
 					car = c.gameObject.GetComponent<Car>();
 					if (car != null && car == controledCar) {
@@ -144,9 +145,8 @@ public class LineDrawer : MonoBehaviour {
 			if (controledCar == null || carRetrace) {
 				Clear();
 
-				colliders = Physics2D.OverlapCircleAll(pointer, 0f);
 				bool carCatched = false;
-
+				colliders = Physics2D.OverlapCircleAll(pointer, CAR_CATCH_PRECISION);
 				if (colliders != null && colliders.Length > 0) {
 					foreach (var c in colliders) {
 						car = c.gameObject.GetComponent<Car>();

@@ -72,16 +72,19 @@ public class Car : MonoBehaviour {
 	}
 
 	private IEnumerator WaitLevelStartPosition() {
+
+		Transform startPoint = null;
+
 		if (LevelsManager.EMPTY_LEVEL) {
 			yield return null;
 		} else {
-			while (Level.StartPoint == null) {
+			while ((startPoint = (type == CarType.Red ? Level.StartPoint1 : Level.StartPoint2)) == null) {
 				yield return null;
 			}
 		}
-		if (Level.StartPoint != null) {
-			transform.position = Level.StartPoint.position;
-			transform.rotation = Level.StartPoint.rotation;
+		if (startPoint != null) {
+			transform.position = startPoint.position;
+			transform.rotation = startPoint.rotation;
 		}
 		lastTarget = transform.position;
 

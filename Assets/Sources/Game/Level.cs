@@ -5,20 +5,26 @@ public class Level : MonoBehaviour {
 	[SerializeField]
 	private int laps = 3;
 	[SerializeField]
-	private Transform startPoint = null;
+	private Transform startPoint1 = null;
+	[SerializeField]
+	private Transform startPoint2 = null;
 	[SerializeField]
 	private Sprite levelSplashSprite = null;
+	[SerializeField]
+	private Sprite levelTutorialSprite = null;
 
 	private static Level instance = null;
 
-	private SpriteRenderer spriteRenderer = null;
+	private SpriteRenderer splashRenderer = null;
+	private SpriteRenderer tutorialRenderer = null;
 	private CircleCollider2D[] checkpoints = null;
 	private int lapsDone = 0;
 	private float lapTime = 0f;
 	private bool raceDone = false;
 	private bool levelStarted = false;
 
-	private GameObject levelSplash = null;
+	private GameObject splashObject = null;
+	private GameObject tutorialObject = null;
 
 	public static void CheckpointCollide(Collider2D checkpoint) {
 		if (instance != null) {
@@ -32,9 +38,15 @@ public class Level : MonoBehaviour {
 		}
 	}
 
-	public static Transform StartPoint {
+	public static Transform StartPoint1 {
 		get {
-			return instance != null ? instance.startPoint : null;
+			return instance != null ? instance.startPoint1 : null;
+		}
+	}
+
+	public static Transform StartPoint2 {
+		get {
+			return instance != null ? instance.startPoint2 : null;
 		}
 	}
 
@@ -107,16 +119,37 @@ public class Level : MonoBehaviour {
 	private IEnumerator StartLevel() {
 		yield return new WaitForSeconds(1f);
 
+		tutorialRenderer.enabled = true;
+		tutorialRenderer.color = Color.white;
+
 		float time = 0.25f;
 		while (time > 0f) {
-			Color c = spriteRenderer.color;
+			Color c = splashRenderer.color;
 			c.a = time;
-			spriteRenderer.color = c;
+			splashRenderer.color = c;
 			time -= Time.deltaTime;
 			yield return null;
-        }
+		}
 
-		spriteRenderer.enabled = false;
+		splashRenderer.enabled = false;
+
+		time = 1f;
+		while (time > 0f) {
+			time -= Time.deltaTime;
+			yield return null;
+		}
+
+		time = 0f;
+		while (time > 0f) {
+			Color c = tutorialRenderer.color;
+			c.a = time;
+			tutorialRenderer.color = c;
+			time -= Time.deltaTime;
+			yield return null;
+		}
+
+		tutorialRenderer.enabled = false;
+
 		levelStarted = true;
 	}
 
@@ -127,12 +160,23 @@ public class Level : MonoBehaviour {
 		lapTime = Time.time;
 		raceDone = false;
 
-		levelSplash = new GameObject("splash");
-		Transform lt = levelSplash.transform;
+		splashObject = new GameObject("splash");
+		Transform lt = splashObject.transform;
 		lt.SetParent(transform, false);
-		spriteRenderer = levelSplash.AddComponent<SpriteRenderer>();
-		spriteRenderer.sprite = levelSplashSprite;
-        spriteRenderer.enabled = true;
+		lt.localPosition = new Vector3(0f, 0f, -9f);
+
+		splashRenderer = splashObject.AddComponent<SpriteRenderer>();
+		splashRenderer.sprite = levelSplashSprite;
+        splashRenderer.enabled = true;
+
+		tutorialObject = new GameObject("tutorial");
+		lt = tutorialObject.transform;
+		lt.SetParent(transform, false);
+		lt.localPosition = new Vector3(0f, 0f, -8.5f);
+
+		tutorialRenderer = tutorialObject.AddComponent<SpriteRenderer>();
+		tutorialRenderer.sprite = levelTutorialSprite;
+		tutorialRenderer.enabled = false;
 
 		StartCoroutine(StartLevel());
     }
