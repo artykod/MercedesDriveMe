@@ -15,11 +15,17 @@ public class GameCore : MonoBehaviour {
 
 	private static bool initialized = false;
 
+	private void Awake() {
+		Initialize();
+	}
+
 	[RuntimeInitializeOnLoadMethod]
 	private static void Initialize() {
 		if (!Application.isPlaying || initialized) {
 			return;
 		}
+
+		GameMode = GameModes.TwoPlayers;
 
 		initialized = true;
 

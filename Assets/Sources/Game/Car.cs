@@ -63,9 +63,13 @@ public class Car : MonoBehaviour {
 			yield return null;
 		}
 		canMove = true;
-        transform.position = Level.StartPoint.position;
-		transform.rotation = Level.StartPoint.rotation;
+		if (Level.StartPoint != null) {
+			transform.position = Level.StartPoint.position;
+			transform.rotation = Level.StartPoint.rotation;
+		}
 		lastTarget = transform.position;
+
+		yield break;
 	}
 
 	private void Update() {

@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using TouchInfo = TouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
 	private LineRenderer line = null;
 	private LinkedList<Vector2> points = new LinkedList<Vector2>();
 	private int lineVerticesCount = 0;
 	private bool canDraw = false;
-
 	private Car controledCar = null;
-	private int currentTouchIndex = -1;
-
-	private static List<int> activeTouches = new List<int>(5);
+	private TouchInfo touchInfo = null;
 
 	public bool IsUnderControl {
 		get;
@@ -48,6 +46,8 @@ public class LineDrawer : MonoBehaviour {
 		if (controledCar != null) {
 			controledCar.LineDrawer = null;
 		}
+
+		TouchInfo = null;
 	}
 
 	public bool RemoveFirst() {
@@ -71,25 +71,21 @@ public class LineDrawer : MonoBehaviour {
 		line.sharedMaterial = Instantiate(line.sharedMaterial);
 		lineVerticesCount = 0;
 		line.SetVertexCount(lineVerticesCount);
-
-		Input.multiTouchEnabled = true;
     }
 
-	public bool isTouchDown = false;
-	public bool isTouch = false;
-	public bool isTouchUp = false;
-	public Vector2 pointer = Vector2.zero;
+	public TouchInfo TouchInfo {
+		get {
+			return touchInfo;
+		}
+		set {
+			touchInfo = value;
 
-	private void LateUpdate() {
-        isTouchDown = false;
-		isTouch = false;
-		isTouchUp = false;
-		pointer = Vector2.zero;
-	}
-
-	public TouchManager.TouchInfo TouchInfo {
-		get;
-		set;
+			/*if (touchInfo == null) {
+				Debug.Log("Set touch info null of " + name);
+			} else {
+				Debug.LogFormat("Set touch info: {0}", touchInfo.id);
+			}*/
+		}
 	}
 
 	private void Update() {
@@ -97,70 +93,34 @@ public class LineDrawer : MonoBehaviour {
 		bool isTouchDown = false;
 		bool isTouch = false;
 		bool isTouchUp = false;
+		TouchInfo touchInfoLocal = TouchInfo;
 
-#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
-		for (int i = 0; i < Input.touchCount; i++) {
-			Touch touch = Input.GetTouch(i);
-			int touchId = touch.fingerId;
-
-			if (!activeTouches.Contains(touchId) || currentTouchIndex == touchId) {
-				if (touch.phase == TouchPhase.Began) {
-					if (currentTouchIndex < 0) {
-						currentTouchIndex = touchId;
-						activeTouches.Add(touchId);
-						isTouchDown = true;
-						Debug.Log("Touch down: " + touchId);
-					}
-				} else if (currentTouchIndex == touchId) {
-					if (touch.phase == TouchPhase.Canceled || touch.phase == TouchPhase.Ended) {
-						isTouchUp = true;
-						activeTouches.Remove(touchId);
-						currentTouchIndex = -1;
-						Debug.Log("Touch up: " + touchId);
-					} else if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
-						isTouch = true;
-						currentTouchIndex = touchId;
-					}
-				}
-
-				if (currentTouchIndex == touchId && (isTouchDown || isTouch)) {
-					pointer = Camera.main.ScreenToWorldPoint(touch.position);
-				}
-			}
+		if (touchInfoLocal == null) {
+			touchInfoLocal = TouchManager.FindFreeTouchInfo();
 		}
 
-		if (currentTouchIndex < 0) {
+		if (touchInfoLocal == null) {
 			return;
-		}
-#else
-		pointer = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-		int touchId = 0;
-		isTouchDown = Input.GetMouseButtonDown(touchId);
-
-		if (currentTouchIndex >= 0) {
-			isTouch = Input.GetMouseButton(touchId);
-			isTouchUp = Input.GetMouseButtonUp(touchId);
-			if (isTouchUp) {
-				activeTouches.Remove(touchId);
-				currentTouchIndex = -1;
-			}
-		}
-
-		if (isTouchDown && !activeTouches.Contains(touchId)) {
-			activeTouches.Add(touchId);
-			currentTouchIndex = touchId;
 		} else {
-			if (currentTouchIndex < 0) {
+			pointer = touchInfoLocal.position;
+			isTouchDown = touchInfoLocal.isTouchDown;
+			isTouch = touchInfoLocal.isTouch;
+			isTouchUp = touchInfoLocal.isTouchUp;
+		}
+
+		if (controledCar != null) {
+			controledCar.LineDrawer = this;
+		} else {
+			if (points.Count > 0) {
+				Clear();
 				return;
 			}
 		}
-#endif
 
 		if (isTouchDown) {
 			Clear();
 
-			Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0f);
+			Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0.05f);
 
 			if (colliders != null && colliders.Length > 0) {
 				Car car = null;
@@ -169,22 +129,28 @@ public class LineDrawer : MonoBehaviour {
 					if (car != null && car.LineDrawer == null) {
 						controledCar = car;
 						controledCar.LineDrawer = this;
+						touchInfoLocal.drawer = this;
+						TouchInfo = touchInfoLocal;
 						line.sharedMaterial.SetColor("_Color", controledCar.LineColor);
                         break;
 					}
 				}
 
-				if (car != null) {
+				if (controledCar != null) {
 					IsUnderControl = true;
 					points.AddFirst(pointer);
 					points.AddLast(pointer);
+
+					canDraw = true;
 				}
 			}
-
-			canDraw = true;
         }
 
-		if (isTouch && canDraw) {
+		if (TouchInfo == null) {
+			return;
+		}
+
+		if (isTouch && canDraw && controledCar != null) {
 			if (points.Count > 1) {
 				Vector2 lastPoint = points.Last.Previous.Value;
 				Vector2 dir = pointer - lastPoint;
