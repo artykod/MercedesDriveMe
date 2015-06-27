@@ -31,6 +31,9 @@ public class UILapDone : MonoBehaviour {
 		}
 
 		if (car.RaceDone && !Level.RaceDone && !winImage.IsActive()) {
+			if (car.Type == Car.CarType.Blue) {
+				winImage.transform.localScale = new Vector3(-1f, -1f, 1f);
+			}
 			winImage.gameObject.SetActive(true);
 			text.gameObject.SetActive(false);
 		} else {
