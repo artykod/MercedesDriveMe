@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class UILapDone : MonoBehaviour {
 	[SerializeField]
 	private Car.CarType carType = Car.CarType.Red;
+	[SerializeField]
+	private Image winImage = null;
 
 	private Text text = null;
 
@@ -28,6 +30,11 @@ public class UILapDone : MonoBehaviour {
 			return;
 		}
 
-		text.text = "КРУГ " + (car.CurrentLap() + 1) + " / " + Level.TotalLaps();
+		if (car.RaceDone && !Level.RaceDone && !winImage.IsActive()) {
+			winImage.gameObject.SetActive(true);
+			text.gameObject.SetActive(false);
+		} else {
+			text.text = "КРУГ " + (car.CurrentLap() + 1) + " / " + Level.TotalLaps();
+		}
 	}
 }

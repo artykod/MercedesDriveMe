@@ -154,7 +154,7 @@ public class LineDrawer : MonoBehaviour {
 				if (colliders != null && colliders.Length > 0) {
 					foreach (var c in colliders) {
 						car = c.gameObject.GetComponent<Car>();
-						if (car != null && car.LineDrawer == null) {
+						if (car != null && car.LineDrawer == null && !car.IsBot) {
 							if (car.LineDrawer == this) {
 								Clear();
 							}

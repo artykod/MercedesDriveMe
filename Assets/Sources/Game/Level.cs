@@ -27,6 +27,12 @@ public class Level : MonoBehaviour {
 
 	private bool raceDone = false;
 
+	public static bool RaceDone {
+		get {
+			return instance != null ? instance.raceDone : false;
+		}
+	}
+
 	public static float StartTime {
 		get {
 			return instance != null ? instance.startTime : 3f;
