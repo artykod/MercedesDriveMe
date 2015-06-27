@@ -6,16 +6,29 @@ public class Level : MonoBehaviour {
 	private int laps = 3;
 	[SerializeField]
 	private Transform startPoint = null;
+	[SerializeField]
+	private Sprite levelSplashSprite = null;
 
 	private static Level instance = null;
+
+	private SpriteRenderer spriteRenderer = null;
 	private CircleCollider2D[] checkpoints = null;
 	private int lapsDone = 0;
 	private float lapTime = 0f;
 	private bool raceDone = false;
+	private bool levelStarted = false;
+
+	private GameObject levelSplash = null;
 
 	public static void CheckpointCollide(Collider2D checkpoint) {
 		if (instance != null) {
 			instance.CheckpointCollideCheck(checkpoint);
+		}
+	}
+
+	public static bool LevelStarted {
+		get {
+			return instance != null ? instance.levelStarted : false;
 		}
 	}
 
@@ -26,11 +39,11 @@ public class Level : MonoBehaviour {
 	}
 
 	public static string CurrentLapTime() {
-		return instance != null ? instance.LapTime() : "00:00:000";
+		return instance != null && LevelStarted ? instance.LapTime() : "00:00:000";
 	}
 
 	public static int CurrentLap() {
-		return instance != null ? instance.lapsDone : 0;
+		return instance != null && LevelStarted ? instance.lapsDone : 0;
 	}
 
 	public static int TotalLaps() {
@@ -85,8 +98,26 @@ public class Level : MonoBehaviour {
 	}
 
 	private IEnumerator ShowMenu() {
+		levelStarted = false;
+
 		yield return new WaitForSeconds(2f);
 		Application.LoadLevel("menu");
+	}
+
+	private IEnumerator StartLevel() {
+		yield return new WaitForSeconds(1f);
+
+		float time = 0.25f;
+		while (time > 0f) {
+			Color c = spriteRenderer.color;
+			c.a = time;
+			spriteRenderer.color = c;
+			time -= Time.deltaTime;
+			yield return null;
+        }
+
+		spriteRenderer.enabled = false;
+		levelStarted = true;
 	}
 
 	private void Awake() {
@@ -95,5 +126,14 @@ public class Level : MonoBehaviour {
 
 		lapTime = Time.time;
 		raceDone = false;
+
+		levelSplash = new GameObject("splash");
+		Transform lt = levelSplash.transform;
+		lt.SetParent(transform, false);
+		spriteRenderer = levelSplash.AddComponent<SpriteRenderer>();
+		spriteRenderer.sprite = levelSplashSprite;
+        spriteRenderer.enabled = true;
+
+		StartCoroutine(StartLevel());
     }
 }

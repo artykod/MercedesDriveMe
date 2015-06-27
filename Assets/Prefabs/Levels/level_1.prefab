@@ -153,7 +153,7 @@ GameObject:
   - 4: {fileID: 411446}
   - 212: {fileID: 21269692}
   - 50: {fileID: 5024878}
-  - 60: {fileID: 6068580}
+  - 60: {fileID: 6043516}
   - 114: {fileID: 11430686}
   m_Layer: 10
   m_Name: level_1
@@ -579,7 +579,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: .5
---- !u!60 &6068580
+--- !u!60 &6043516
 PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1133,6 +1133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   laps: 3
   startPoint: {fileID: 470906}
+  levelSplashSprite: {fileID: 21300000, guid: 99221a1e34468244f893863839534cae, type: 3}
 --- !u!212 &21269692
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -1174,6 +1175,11 @@ Prefab:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: levelSplashSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 99221a1e34468244f893863839534cae,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160918}

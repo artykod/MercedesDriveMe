@@ -4,7 +4,7 @@ using TouchInfo = TouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
 
-	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = false;
+	private static readonly bool BREAK_LINE_ON_LEVEL_COLLISION = true;
 
 	private LineRenderer line = null;
 	private LinkedList<Vector2> points = new LinkedList<Vector2>();
@@ -84,11 +84,9 @@ public class LineDrawer : MonoBehaviour {
 		set {
 			touchInfo = value;
 
-			/*if (touchInfo == null) {
-				Debug.Log("Set touch info null of " + name);
-			} else {
-				Debug.LogFormat("Set touch info: {0}", touchInfo.id);
-			}*/
+			if (touchInfo == null) {
+				IsUnderControl = false;
+            }
 		}
 	}
 
@@ -114,6 +112,11 @@ public class LineDrawer : MonoBehaviour {
 
 		if (controledCar != null) {
 			controledCar.LineDrawer = this;
+
+			if (controledCar != null && !controledCar.GoToTarget && controledCar.LineDrawer == null) {
+				controledCar = null;
+			}
+
 		} else {
 			if (points.Count > 0) {
 				Clear();
@@ -121,30 +124,52 @@ public class LineDrawer : MonoBehaviour {
 			}
 		}
 
-		if (isTouchDown && controledCar == null) {
-			Clear();
+		if (isTouchDown) {
 
-			Collider2D[] colliders = Physics2D.OverlapCircleAll(pointer, 0.05f);
+			bool carRetrace = false;
+			Car car = null;
+			Collider2D[] colliders = null;
 
-			if (colliders != null && colliders.Length > 0) {
-				Car car = null;
+			if (controledCar != null && controledCar.LineDrawer == this) {
+				colliders = Physics2D.OverlapCircleAll(pointer, 0f);
 				foreach (var c in colliders) {
 					car = c.gameObject.GetComponent<Car>();
-					if (car != null && car.LineDrawer == null) {
-						controledCar = car;
-						controledCar.LineDrawer = this;
-						touchInfoLocal.drawer = this;
-						TouchInfo = touchInfoLocal;
-						line.sharedMaterial.SetColor("_Color", controledCar.LineColor);
+					if (car != null && car == controledCar) {
+						carRetrace = true;
                         break;
 					}
 				}
+			}
 
-				if (controledCar != null) {
-					IsUnderControl = true;
-					points.AddFirst(pointer);
-					points.AddLast(pointer);
-					canDraw = true;
+			if (controledCar == null || carRetrace) {
+				Clear();
+
+				colliders = Physics2D.OverlapCircleAll(pointer, 0f);
+				bool carCatched = false;
+
+				if (colliders != null && colliders.Length > 0) {
+					foreach (var c in colliders) {
+						car = c.gameObject.GetComponent<Car>();
+						if (car != null && car.LineDrawer == null) {
+							if (car.LineDrawer == this) {
+								Clear();
+							}
+							controledCar = car;
+							controledCar.LineDrawer = this;
+							touchInfoLocal.drawer = this;
+							TouchInfo = touchInfoLocal;
+							line.sharedMaterial.SetColor("_Color", controledCar.LineColor);
+							carCatched = true;
+							break;
+						}
+					}
+
+					if (carCatched && controledCar != null && controledCar.LineDrawer == this) {
+						IsUnderControl = true;
+						points.AddFirst(pointer);
+						points.AddLast(pointer);
+						canDraw = true;
+					}
 				}
 			}
         }

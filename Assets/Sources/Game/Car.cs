@@ -44,6 +44,12 @@ public class Car : MonoBehaviour {
 			lineDrawer = value;
 		}
 	}
+
+	public bool GoToTarget {
+		get {
+			return goToTarget;
+		}
+	}
 	
 	private LineDrawer lineDrawer = null;
 
@@ -73,12 +79,17 @@ public class Car : MonoBehaviour {
 				yield return null;
 			}
 		}
-		canMove = true;
 		if (Level.StartPoint != null) {
 			transform.position = Level.StartPoint.position;
 			transform.rotation = Level.StartPoint.rotation;
 		}
 		lastTarget = transform.position;
+
+		while (!Level.LevelStarted) {
+			yield return null;
+		}
+
+		canMove = true;
 	}
 
 	private void Update() {
@@ -138,11 +149,12 @@ public class Car : MonoBehaviour {
 			}
 		}
 
-		if (body.velocity.magnitude < 0.1f && Mathf.Abs(body.angularVelocity) < 1f && LineDrawer != null && LineDrawer.HasPoints) {
-			if (!IsBot) {
+		/*if (body.velocity.magnitude < 0.01f && Mathf.Abs(body.angularVelocity) < 0.01f) {
+			if (!IsBot && LineDrawer != null && LineDrawer.HasPoints) {
 				TargetCompleted();
             }
-		}
+			LineDrawer = null;
+		}*/
 	}
 
 	private void TargetCompleted() {
