@@ -31,6 +31,9 @@ public class Car : MonoBehaviour {
 	private CircleCollider2D[] checkpoints = null;
 	private bool[] checkpointsEnabled = null;
 
+	private CubicCurve botPathCurve = null;
+	private float botPathEvaluateTime = 0f;
+
 	public static Car CarByType(CarType carType) {
 		Car car = null;
 		allCars.TryGetValue(carType, out car);
@@ -119,13 +122,22 @@ public class Car : MonoBehaviour {
 						if (lapsDone >= Level.TotalLaps()) {
 							Debug.Log("Race done, car = " + gameObject.name, this);
 							raceDone = true;
-
-							//canMove = false;
+							
 							TargetCompleted();
 
 							lapTime = Time.time - lapTime;
 
-							//StartCoroutine(ShowMenu());
+							if (GameCore.LastWinner == GameCore.PlayersTypes.Unknown) {
+								if (IsBot) {
+									GameCore.LastWinner = GameCore.PlayersTypes.Bot;
+								} else {
+									if (type == CarType.Red) {
+										GameCore.LastWinner = GameCore.PlayersTypes.Player1;
+									} else {
+										GameCore.LastWinner = GameCore.PlayersTypes.Player2;
+									}
+								}
+							}
 
 							return;
 						}
@@ -181,6 +193,8 @@ public class Car : MonoBehaviour {
 			yield return null;
 		}
 
+		botPathCurve = Level.BotPathCurve;
+
 		checkpoints = Level.Checkpoints;
 		checkpointsEnabled = new bool[checkpoints.Length];
 		for (int i = 0; i < checkpointsEnabled.Length; i++) {
@@ -207,17 +221,32 @@ public class Car : MonoBehaviour {
 			}
 		}
 
+		if (IsBot && botPathCurve != null) {
+			if (raceDone) {
+				//
+			} else {
+				lastTarget = botPathCurve.Evaluate(botPathEvaluateTime);
+				goToTarget = true;
+			}
+        }
+
         Vector2 target = lastTarget;
 		Vector2 rotation = transform.rotation * Vector2.up;
 		Vector2 dir = target - new Vector2(transform.position.x, transform.position.y);
 		float distance = dir.magnitude;
 
 		if (goToTarget && Mathf.Abs(distance) > 0.0001f) {
-			float velocityMagnitude = Mathf.Min(20f, distance * 20f);
+
+			float maxSpeed = 10f;
+			if (IsBot) {
+				maxSpeed = 8f;
+			}
+
+			float velocityMagnitude = Mathf.Min(maxSpeed, distance * maxSpeed);
 			float dot = Vector2.Dot(rotation, (dir / distance) * velocityMagnitude);
 			Vector2 proj = rotation * dot;
 
-			Vector2 velocity = Vector2.Lerp(body.velocity, proj * Time.deltaTime * 50f, 0.1f);
+			Vector2 velocity = Vector2.Lerp(body.velocity, proj, 0.1f);
 			velocity = rotation * Vector2.Dot(rotation, velocity);
 			if (!float.IsNaN(velocity.x) && !float.IsNaN(velocity.y)) {
 				body.velocity = velocity;
@@ -235,6 +264,14 @@ public class Car : MonoBehaviour {
 		body.angularVelocity = 0f;
 
 		if (distance < 0.7f) {
+
+			if (IsBot) {
+				botPathEvaluateTime += 0.005f;
+				if (botPathEvaluateTime > 1f) {
+					botPathEvaluateTime = 0f;
+				}
+            }
+
 			if (lineDrawer != null && lineDrawer.HasPoints) {
 				if (!lineDrawer.RemoveFirst() || lineDrawer.PointsCount < 3) {
 					TargetCompleted();

@@ -47,6 +47,12 @@ public class Level : MonoBehaviour {
 		}
 	}
 
+	public static CubicCurve BotPathCurve {
+		get {
+			return instance != null ? instance.botPathCurve : null;
+		}
+	}
+
 	public static float StartTime {
 		get {
 			return instance != null ? instance.startTime : 3f;
@@ -86,11 +92,11 @@ public class Level : MonoBehaviour {
 		private set;
 	}
 
-	private IEnumerator ShowMenu() {
+	private IEnumerator ShowResults() {
 		levelStarted = false;
 
 		yield return new WaitForSeconds(2f);
-		Application.LoadLevel("menu");
+		Application.LoadLevel("result");
 	}
 
 	private IEnumerator StartLevel() {
@@ -169,6 +175,8 @@ public class Level : MonoBehaviour {
 		instance = this;
 		checkpoints = GetComponentsInChildren<CircleCollider2D>();
 
+		GameCore.LastWinner = GameCore.PlayersTypes.Unknown;
+
 		splashObject = new GameObject("splash");
 		Transform lt = splashObject.transform;
 		lt.SetParent(transform, false);
@@ -214,7 +222,7 @@ public class Level : MonoBehaviour {
 			}
 
 			if (allDone) {
-				StartCoroutine(ShowMenu());
+				StartCoroutine(ShowResults());
 				raceDone = true;
 			}
 		}

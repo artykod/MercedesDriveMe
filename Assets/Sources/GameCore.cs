@@ -8,6 +8,18 @@ public class GameCore : MonoBehaviour {
 		TwoPlayers,
 	}
 
+	public enum PlayersTypes {
+		Unknown,
+		Bot,
+		Player1,
+		Player2,
+	}
+
+	public static PlayersTypes LastWinner {
+		get;
+		set;
+	}
+
 	public static GameModes GameMode {
 		get;
 		set;
@@ -25,7 +37,8 @@ public class GameCore : MonoBehaviour {
 			return;
 		}
 
-		GameMode = GameModes.TwoPlayers;
+		//GameMode = GameModes.TwoPlayers;
+		GameMode = GameModes.OnePlayerWithBot;
 
 		initialized = true;
 

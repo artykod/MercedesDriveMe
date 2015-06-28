@@ -17,6 +17,12 @@ public class UILapTime : MonoBehaviour {
 			return;
 		}
 
+		Car car = Car.CarByType(carType);
+		if (car == null || car.IsBot) {
+			text.text = "";
+			return;
+		}
+
 		if (Level.StartTime > -0.5f) {
 			int value = (int)Level.StartTime;
 			if (value <= 0) {
@@ -26,11 +32,7 @@ public class UILapTime : MonoBehaviour {
 			}
 			return;
 		}
-
-		Car car = Car.CarByType(carType);
-		if (car == null) {
-			return;
-		}
+		
 		text.text = car.CurrentLapTime();
 	}
 }
