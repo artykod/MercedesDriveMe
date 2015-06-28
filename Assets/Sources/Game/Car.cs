@@ -213,7 +213,7 @@ public class Car : MonoBehaviour {
 		float distance = dir.magnitude;
 
 		if (goToTarget && Mathf.Abs(distance) > 0.0001f) {
-			float velocityMagnitude = Mathf.Min(10f, distance * 20f);
+			float velocityMagnitude = Mathf.Min(20f, distance * 20f);
 			float dot = Vector2.Dot(rotation, (dir / distance) * velocityMagnitude);
 			Vector2 proj = rotation * dot;
 

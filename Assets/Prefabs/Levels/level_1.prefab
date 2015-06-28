@@ -1165,6 +1165,12 @@ MonoBehaviour:
   levelSplashSprite: {fileID: 21300000, guid: 99221a1e34468244f893863839534cae, type: 3}
   levelTutorialSprite: {fileID: 21300000, guid: 17c9900826a59ea4991b903681da7628,
     type: 3}
+  levelTutorialHandSprite: {fileID: 21300000, guid: 7977e73205a9be546b13270d3402a590,
+    type: 3}
+  tutorialLineRendererPrefab: {fileID: 12017528, guid: b58df2c105a93df45a1fc83928173941,
+    type: 2}
+  tutorialCurve: {fileID: 11400000, guid: 7f48774cf71ddaa44a57c362de5ad276, type: 2}
+  botPathCurve: {fileID: 11400000, guid: 1f4c53ebf153a0142a7311b7a5d96950, type: 2}
 --- !u!212 &21269692
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -1216,6 +1222,26 @@ Prefab:
       value: 
       objectReference: {fileID: 21300000, guid: 17c9900826a59ea4991b903681da7628,
         type: 3}
+    - target: {fileID: 0}
+      propertyPath: botPathCurve
+      value: 
+      objectReference: {fileID: 11400000, guid: 1f4c53ebf153a0142a7311b7a5d96950,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: tutorialCurve
+      value: 
+      objectReference: {fileID: 11400000, guid: 7f48774cf71ddaa44a57c362de5ad276,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: levelTutorialHandSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7977e73205a9be546b13270d3402a590,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: tutorialLineRendererPrefab
+      value: 
+      objectReference: {fileID: 12017528, guid: b58df2c105a93df45a1fc83928173941,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160918}

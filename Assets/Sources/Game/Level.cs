@@ -12,16 +12,30 @@ public class Level : MonoBehaviour {
 	private Sprite levelSplashSprite = null;
 	[SerializeField]
 	private Sprite levelTutorialSprite = null;
+	[SerializeField]
+	private Sprite levelTutorialHandSprite = null;
+	[SerializeField]
+	private LineRenderer tutorialLineRendererPrefab = null;
+
+	[SerializeField]
+	private CubicCurve tutorialCurve = null;
+	[SerializeField]
+	private CubicCurve botPathCurve = null;
 
 	private static Level instance = null;
-
-	private SpriteRenderer splashRenderer = null;
-	private SpriteRenderer tutorialRenderer = null;
+	
 	private CircleCollider2D[] checkpoints = null;
 	private bool levelStarted = false;
 
+	private SpriteRenderer splashRenderer = null;
+	private SpriteRenderer tutorialRenderer = null;
+	private SpriteRenderer tutorialHandRenderer = null;
+
+	private LineRenderer tutorialLineRenderer = null;
+
 	private GameObject splashObject = null;
 	private GameObject tutorialObject = null;
+	private GameObject tutorialHandObject = null;
 
 	private float startTime = 3f;
 
@@ -98,8 +112,23 @@ public class Level : MonoBehaviour {
 
 		splashRenderer.enabled = false;
 
+		tutorialHandRenderer.enabled = true;
+		tutorialLineRenderer.enabled = true;
+
 		time = 1f;
+		int linePointsCount = 0;
 		while (time > 0f) {
+			Vector2 p = tutorialCurve.Evaluate(1f - time);
+			Vector3 handPosition = tutorialHandObject.transform.localPosition;
+			handPosition.x = p.x;
+			handPosition.y = p.y;
+			tutorialHandObject.transform.localPosition = handPosition;
+
+			linePointsCount++;
+			tutorialLineRenderer.SetVertexCount(linePointsCount);
+			handPosition.z -= 0.1f;
+            tutorialLineRenderer.SetPosition(linePointsCount - 1, handPosition);
+
 			time -= Time.deltaTime;
 			yield return null;
 		}
@@ -114,6 +143,8 @@ public class Level : MonoBehaviour {
 			yield return null;
 		}
 
+		tutorialLineRenderer.enabled = false;
+        tutorialHandRenderer.enabled = false;
 		tutorialRenderer.enabled = false;
 		IsTutorialDone = true;
 
@@ -155,6 +186,18 @@ public class Level : MonoBehaviour {
 		tutorialRenderer = tutorialObject.AddComponent<SpriteRenderer>();
 		tutorialRenderer.sprite = levelTutorialSprite;
 		tutorialRenderer.enabled = false;
+
+		tutorialHandObject = new GameObject("tutorial_hand");
+		lt = tutorialHandObject.transform;
+		lt.SetParent(transform, false);
+		lt.localPosition = new Vector3(0f, 0f, -8.6f);
+
+		tutorialHandRenderer = tutorialHandObject.AddComponent<SpriteRenderer>();
+		tutorialHandRenderer.sprite = levelTutorialHandSprite;
+		tutorialHandRenderer.enabled = false;
+
+		tutorialLineRenderer = Instantiate(tutorialLineRendererPrefab);
+		tutorialLineRenderer.transform.SetParent(transform, false);
 
 		StartCoroutine(StartLevel());
     }
