@@ -2,7 +2,7 @@
 	"screenWidth":"1920",
 	"screenHeight":"1080",
 	"fullscreen":"false",
-	"debug":"true",
+	"debug":"false",
 	"gameSplashTime":0.5,
 	"raceSplashTime":1.0,
 	"raceResultsTime":2.0,

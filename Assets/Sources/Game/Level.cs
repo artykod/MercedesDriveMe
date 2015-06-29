@@ -1,7 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Level : MonoBehaviour {
+
+	public class PlayerLevelResult {
+		public string time = "00:00:000";
+		public float timeValue = 0f;
+		public int laps = 0;
+		public int place = 0;
+		public Car.CarType carType = Car.CarType.Red;
+	}
+
 	[SerializeField]
 	private int laps = 3;
 	[SerializeField]
@@ -37,9 +47,17 @@ public class Level : MonoBehaviour {
 	private GameObject tutorialObject = null;
 	private GameObject tutorialHandObject = null;
 
+	private static List<PlayerLevelResult> playersResults = new List<PlayerLevelResult>();
+
 	private float startTime = 3f;
 
 	private bool raceDone = false;
+
+	public static List<PlayerLevelResult> PlayersResults {
+		get {
+			return playersResults;
+		}
+	}
 
 	public static bool RaceDone {
 		get {
@@ -141,7 +159,7 @@ public class Level : MonoBehaviour {
 
 			linePointsCount++;
 			tutorialLineRenderer.SetVertexCount(linePointsCount);
-			handPosition.z -= 0.1f;
+			handPosition.z += 0.1f;
             tutorialLineRenderer.SetPosition(linePointsCount - 1, handPosition);
 
 			time -= Time.deltaTime;
@@ -184,6 +202,8 @@ public class Level : MonoBehaviour {
 		instance = this;
 		checkpoints = GetComponentsInChildren<CircleCollider2D>();
 
+		playersResults.Clear();
+
 		GameCore.LastWinner = GameCore.PlayersTypes.Unknown;
 
 		splashObject = new GameObject("splash");
@@ -207,7 +227,7 @@ public class Level : MonoBehaviour {
 		tutorialHandObject = new GameObject("tutorial_hand");
 		lt = tutorialHandObject.transform;
 		lt.SetParent(transform, false);
-		lt.localPosition = new Vector3(0f, 0f, -8.6f);
+		lt.localPosition = new Vector3(0f, 0f, -8.8f);
 
 		tutorialHandRenderer = tutorialHandObject.AddComponent<SpriteRenderer>();
 		tutorialHandRenderer.sprite = levelTutorialHandSprite;
@@ -252,6 +272,8 @@ public class Level : MonoBehaviour {
 				StartCoroutine(inactiveCount > 1 ? ShowMainMenu() : ShowResults());
 				raceDone = true;
 
+				FillLevelResults();
+
 				return;
 			}
 
@@ -269,8 +291,41 @@ public class Level : MonoBehaviour {
 			if (allDone) {
 				StartCoroutine(ShowResults());
 				raceDone = true;
-				return;
+
+				FillLevelResults();
+
+                return;
 			}
 		}
 	}
+
+	private void FillLevelResults() {
+		playersResults.Clear();
+
+		foreach (var i in Car.AllCars()) {
+			PlayerLevelResult result = new PlayerLevelResult();
+
+			result.carType = i.Type;
+			result.laps = i.CurrentLap();
+			result.time = i.CurrentLapTime();
+			if (result.time == "00:00:000") {
+				result.time = "--:--:---";
+            }
+
+			result.place = 
+				GameCore.LastWinner == GameCore.PlayersTypes.Player1 && i.Type == Car.CarType.Red || 
+				GameCore.LastWinner == GameCore.PlayersTypes.Player2 && i.Type == Car.CarType.Blue 
+				? 1 : 2;
+
+			if (GameCore.LastWinner == GameCore.PlayersTypes.Unknown) {
+				result.place = 0;
+			}
+
+			playersResults.Add(result);
+		}
+
+		playersResults.Sort((PlayerLevelResult r1, PlayerLevelResult r2) => {
+			return r1.place >= r2.place ? 1 : -1;
+		});
+    }
 }

@@ -22,6 +22,7 @@ public class UIMainMenuButton : MonoBehaviour, IPointerClickHandler {
 			break;
 		}
 
+		LevelsManager.GoToNextLevel();
 		Application.LoadLevel("main");
 	}
 }

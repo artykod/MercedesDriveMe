@@ -12,39 +12,52 @@ public class LevelsManager : MonoBehaviour {
 	private GameObject currentLevel = null;
 
 	private static int currentLevelIndex = -1;
+	private static int levelsCount = 0;
+	private static int lastLevelIndex = 0;
 
-	public void LoadLevel(int index) {
-		if (currentLevel != null) {
-			DestroyImmediate(currentLevel, false);
-			currentLevel = null;
-        }
+	public static int LastLevelIndex {
+		get {
+			return lastLevelIndex;
+		}
+	}
 
-		currentLevel = Instantiate(levelsPrefabs[index]);
-		currentLevel.transform.localPosition = Vector3.zero;
-		backgroundVisual.LoadBackground(levelsPrefabs[index].name);
+	public static void GoToNextLevel() {
+		currentLevelIndex++;
+		if (currentLevelIndex >= levelsCount) {
+			currentLevelIndex = 0;
+		}
 	}
 
 	private void Start() {
 		Random.seed = (int)System.DateTime.Now.Ticks;
 
+		levelsCount = levelsPrefabs.Length;
+
 		if (currentLevelIndex < 0) {
 			currentLevelIndex = Random.Range(0, levelsPrefabs.Length);
 		}
 
-		LoadRandomLevel();
+		LoadSelectedLevel();
     }
 
-	private void LoadRandomLevel() {
+	private void LoadSelectedLevel() {
 		if (EMPTY_LEVEL) {
 			return;
 		}
 
-		//LoadLevel(Random.Range(0, levelsPrefabs.Length));
-		//LoadLevel(1);
-		LoadLevel(currentLevelIndex++);
-		if (currentLevelIndex >= levelsPrefabs.Length) {
-			currentLevelIndex = 0;
+		//LoadLevel(lastLevelIndex = 1);
+		LoadLevel(lastLevelIndex = currentLevelIndex);
+	}
+
+	private void LoadLevel(int index) {
+		if (currentLevel != null) {
+			DestroyImmediate(currentLevel, false);
+			currentLevel = null;
 		}
+
+		currentLevel = Instantiate(levelsPrefabs[index]);
+		currentLevel.transform.localPosition = Vector3.zero;
+		backgroundVisual.LoadBackground(levelsPrefabs[index].name);
 	}
 
 	private void OnGUI() {

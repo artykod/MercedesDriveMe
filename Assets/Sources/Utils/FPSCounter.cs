@@ -19,7 +19,12 @@ namespace UnityStandardAssets.Utility
 
             m_FpsNextPeriod = Time.realtimeSinceStartup + fpsMeasurePeriod;
             m_GuiText = GetComponent<GUIText>();
-        }
+
+			if (!Config.DebugMode) {
+				m_GuiText.enabled = false;
+				Destroy(this);
+			}
+		}
 
 
         private void Update()
