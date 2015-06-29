@@ -90,6 +90,16 @@ public class Car : MonoBehaviour {
 		return lapsDone >= Level.TotalLaps() ? Level.TotalLaps() - 1 : lapsDone;
 	}
 
+	public float InactiveCooldown {
+		get;
+		private set;
+	}
+
+	public bool IsActive {
+		get;
+		private set;
+	}
+
 	private string LapTime() {
 		float time = Level.LevelStarted ? Time.time - lapTime : 0f;
 
@@ -105,6 +115,11 @@ public class Car : MonoBehaviour {
 	}
 
 	private void CheckpointCollideCheck(Collider2D checkpoint) {
+
+		if (raceDone) {
+			return;
+		}
+
 		for (int i = 0; i < checkpoints.Length; i++) {
 			if (checkpoints[i] == checkpoint) {
 				if (i == 0 || !checkpointsEnabled[i - 1]) {
@@ -153,6 +168,11 @@ public class Car : MonoBehaviour {
 
 	private void Awake() {
 		raceDone = false;
+		IsActive = true;
+
+		InactiveCooldown = Config.PlayerInactiveCooldown;
+
+		lineColor = type == CarType.Red ? Config.RaceLine1Color : Config.RaceLine2Color;
 
 		if (GameCore.GameMode == GameCore.GameModes.OnePlayer && type == CarType.Blue) {
 			Destroy(gameObject);
@@ -237,10 +257,7 @@ public class Car : MonoBehaviour {
 
 		if (goToTarget && Mathf.Abs(distance) > 0.0001f) {
 
-			float maxSpeed = 10f;
-			if (IsBot) {
-				maxSpeed = 8f;
-			}
+			float maxSpeed = IsBot ? Config.RaceCarSpeedBot : Config.RaceCarSpeedPlayer;
 
 			float velocityMagnitude = Mathf.Min(maxSpeed, distance * maxSpeed);
 			float dot = Vector2.Dot(rotation, (dir / distance) * velocityMagnitude);
@@ -256,6 +273,9 @@ public class Car : MonoBehaviour {
 
 			float k = Mathf.Min(Mathf.Pow(distance, 4f), 1f);
 			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion2DHelper.RotationWithDirection(new Vector2(dir.y, -dir.x)), 0.2f * k);
+
+			InactiveCooldown = Config.PlayerInactiveCooldown;
+			IsActive = true;
 		}
 
 		body.velocity = rotation * Vector2.Dot(rotation, body.velocity);
@@ -284,6 +304,16 @@ public class Car : MonoBehaviour {
 				}
 			}
 		}
+
+		if (IsActive && !Level.RaceDone && !goToTarget && Level.LevelStarted && !IsBot) {
+			InactiveCooldown -= Time.deltaTime;
+		}
+
+		// время простоя игрока вышло, он проиграл
+		if (IsActive && !Level.RaceDone && InactiveCooldown < 0f) {
+			TargetCompleted();
+			IsActive = false;
+        }
 
 		/*if (body.velocity.magnitude < 0.01f && Mathf.Abs(body.angularVelocity) < 0.01f) {
 			if (!IsBot && LineDrawer != null && LineDrawer.HasPoints) {

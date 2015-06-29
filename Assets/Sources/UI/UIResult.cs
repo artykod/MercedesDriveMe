@@ -16,6 +16,11 @@ public class UIResult : MonoBehaviour {
 	}
 
 	private void Awake() {
+		if (GameCore.LastWinner == GameCore.PlayersTypes.Unknown && GameCore.GameMode == GameCore.GameModes.OnePlayerWithBot) {
+			background.sprite = gameWithBotLose;
+			return;
+		}
+
 		switch (GameCore.LastWinner) {
 		case GameCore.PlayersTypes.Bot:
 			background.sprite = gameWithBotLose;

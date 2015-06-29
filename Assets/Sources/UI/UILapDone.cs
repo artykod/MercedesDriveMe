@@ -30,13 +30,21 @@ public class UILapDone : MonoBehaviour {
 		}
 
 		if (car.RaceDone && !Level.RaceDone && lastWinner == GameCore.PlayersTypes.Unknown) {
-			if (car.Type == Car.CarType.Blue) {
-				winImage.transform.localScale = new Vector3(-1f, -1f, 1f);
-			}
-			winImage.gameObject.SetActive(!car.IsBot);
-			text.gameObject.SetActive(false);
+			if (GameCore.LastWinner != GameCore.PlayersTypes.Unknown) {
+				if (car.Type == Car.CarType.Blue && (GameCore.LastWinner == GameCore.PlayersTypes.Player2 && car.Type == Car.CarType.Blue)) {
+					winImage.transform.localScale = new Vector3(-1f, -1f, 1f);
+				} else {
+					winImage.gameObject.SetActive(!car.IsBot);
+					text.gameObject.SetActive(false);
+				}
 
-			lastWinner = GameCore.LastWinner;
+				if (
+					(GameCore.LastWinner == GameCore.PlayersTypes.Player1 && car.Type == Car.CarType.Red) ||
+					(GameCore.LastWinner == GameCore.PlayersTypes.Player2 && car.Type == Car.CarType.Blue)
+				) {
+					lastWinner = GameCore.LastWinner;
+				}
+			}
         } else {
 			if (car.IsBot) {
 				text.text = "";

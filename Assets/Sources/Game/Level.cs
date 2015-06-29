@@ -95,14 +95,20 @@ public class Level : MonoBehaviour {
 	private IEnumerator ShowResults() {
 		levelStarted = false;
 
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(Config.RaceResultsTime);
 		Application.LoadLevel("result");
+	}
+
+	private IEnumerator ShowMainMenu() {
+		levelStarted = false;
+		yield return null;
+		Application.LoadLevel("menu");
 	}
 
 	private IEnumerator StartLevel() {
 		IsTutorialDone = false;
 
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(Config.RaceSplashTime);
 
 		tutorialRenderer.enabled = true;
 		tutorialRenderer.color = Color.white;
@@ -121,7 +127,10 @@ public class Level : MonoBehaviour {
 		tutorialHandRenderer.enabled = true;
 		tutorialLineRenderer.enabled = true;
 
-		time = 1f;
+		tutorialLineRenderer.sharedMaterial = Instantiate(tutorialLineRenderer.sharedMaterial);
+		tutorialLineRenderer.sharedMaterial.SetColor("_Color", Config.RaceLine1Color);
+
+		time = Config.RaceTutorialTime;
 		int linePointsCount = 0;
 		while (time > 0f) {
 			Vector2 p = tutorialCurve.Evaluate(1f - time);
@@ -212,6 +221,42 @@ public class Level : MonoBehaviour {
 
 	private void Update() {
 		if (!raceDone) {
+
+			// check inactive
+
+			bool isAnyoneActive = false;
+			int inactiveCount = 0;
+
+			foreach (var i in Car.AllCars()) {
+				if (i.IsBot && GameCore.LastWinner == GameCore.PlayersTypes.Unknown) {
+					continue;
+				}
+
+				if (i.IsActive) {
+					if (!i.RaceDone) {
+						isAnyoneActive = true;
+						break;
+					}
+				} else {
+					inactiveCount++;
+				}
+			}
+
+			if (
+				(!isAnyoneActive && inactiveCount > 1) || 
+				(!isAnyoneActive && GameCore.GameMode == GameCore.GameModes.OnePlayerWithBot) || 
+				(GameCore.LastWinner != GameCore.PlayersTypes.Unknown && !isAnyoneActive)
+			) {
+				Debug.Log("All inactive, count = " + inactiveCount);
+
+				StartCoroutine(inactiveCount > 1 ? ShowMainMenu() : ShowResults());
+				raceDone = true;
+
+				return;
+			}
+
+			// race done
+
 			bool allDone = true;
 
 			foreach (var i in Car.AllCars()) {
@@ -224,6 +269,7 @@ public class Level : MonoBehaviour {
 			if (allDone) {
 				StartCoroutine(ShowResults());
 				raceDone = true;
+				return;
 			}
 		}
 	}

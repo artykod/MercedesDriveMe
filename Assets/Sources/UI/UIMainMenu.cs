@@ -19,7 +19,7 @@ public class UIMainMenu : MonoBehaviour {
 		intro.color = Color.white;
 		intro.enabled = true;
 
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(Config.GameSplashTime);
 
 		float time = 0.25f;
 		float current = time;
