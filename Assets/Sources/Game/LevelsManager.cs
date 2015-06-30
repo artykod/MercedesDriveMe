@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class LevelsManager : MonoBehaviour {
 
@@ -16,6 +17,19 @@ public class LevelsManager : MonoBehaviour {
 	private static int currentLevelIndex = -1;
 	private static int levelsCount = 0;
 	private static int lastLevelIndex = 0;
+
+	public static List<int> levelsDone = new List<int>();
+
+	public static int LevelsCount {
+		get {
+			return levelsCount;
+        }
+	}
+
+	public static bool IsRetryLevel {
+		get;
+		set;
+	}
 
 	public static int LastLevelIndex {
 		get {
@@ -59,15 +73,21 @@ public class LevelsManager : MonoBehaviour {
 
 		//LoadLevel(lastLevelIndex = 1);
 
-		int lastRace = PlayerPrefs.GetInt(PREFS_KEY_LAST_RACE_NUMBER, -1);
-		if (lastRace == currentLevelIndex) {
-			GoToNextLevel();
+		if (!IsRetryLevel) {
+			int lastRace = PlayerPrefs.GetInt(PREFS_KEY_LAST_RACE_NUMBER, -1);
+			if (lastRace == currentLevelIndex) {
+				GoToNextLevel();
+			}
 		}
 		PlayerPrefs.SetInt(PREFS_KEY_LAST_RACE_NUMBER, currentLevelIndex);
 		PlayerPrefs.Save();
 
-        LoadLevel(lastLevelIndex = currentLevelIndex);
-	}
+		LoadLevel(lastLevelIndex = currentLevelIndex);
+
+		if (!levelsDone.Contains(currentLevelIndex)) {
+			levelsDone.Add(currentLevelIndex);
+		}
+    }
 
 	private void LoadLevel(int index) {
 		if (currentLevel != null) {

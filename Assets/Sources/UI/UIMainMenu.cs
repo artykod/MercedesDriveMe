@@ -13,7 +13,10 @@ public class UIMainMenu : MonoBehaviour {
 			StartCoroutine(ShowIntro());
 			isFirstStart = false;
         }
-    }
+
+		LevelsManager.IsRetryLevel = false;
+		LevelsManager.levelsDone.Clear();
+	}
 
 	private IEnumerator ShowIntro() {
 		intro.color = Color.white;

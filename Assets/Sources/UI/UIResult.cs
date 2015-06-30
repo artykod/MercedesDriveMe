@@ -17,28 +17,39 @@ public class UIResult : MonoBehaviour {
 	private Image buttons3Menu = null;
 
 	public void GoToMainMenu() {
+		LevelsManager.IsRetryLevel = false;
 		Application.LoadLevel("menu");
 	}
 
 	public void NextLevel() {
+		LevelsManager.IsRetryLevel = false;
 		LevelsManager.GoToNextLevel();
 		Application.LoadLevel("main");
 	}
 
 	public void RetryLevel() {
+		LevelsManager.IsRetryLevel = true;
 		Application.LoadLevel("main");
 	}
 
 	public void AnotherGame() {
+		LevelsManager.IsRetryLevel = false;
 		Debug.Log("AnotherGame stub");
 	}
 
 	private void Awake() {
 		
-		bool isNotLastLevel = LevelsManager.LastLevelIndex >= 2;
+		bool allLevelsDone = true;
 
-		buttons4Menu.gameObject.SetActive(!isNotLastLevel);
-		buttons3Menu.gameObject.SetActive(isNotLastLevel);
+		for (int i = 0; i < LevelsManager.LevelsCount; i++) {
+			if (!LevelsManager.levelsDone.Contains(i)) {
+				allLevelsDone = false;
+				break;
+			}
+		}
+
+		buttons4Menu.gameObject.SetActive(!allLevelsDone);
+		buttons3Menu.gameObject.SetActive(allLevelsDone);
 
 		if (GameCore.LastWinner == GameCore.PlayersTypes.Unknown && GameCore.GameMode == GameCore.GameModes.OnePlayerWithBot) {
 			background.sprite = gameWithBotLose;
