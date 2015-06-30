@@ -18,4 +18,8 @@
 	"raceLine2Color_g":0,
 	"raceLine2Color_b":0.8,
 	"raceLine2Color_a":0.5,
+	"raceLineTutorialColor_r":1,
+	"raceLineTutorialColor_g":1,
+	"raceLineTutorialColor_b":1,
+	"raceLineTutorialColor_a":0.5,
 }

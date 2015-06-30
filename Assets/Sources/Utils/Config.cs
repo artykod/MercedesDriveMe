@@ -26,6 +26,10 @@ public static class Config {
 	private const string KEY_RACE_LINE_2_COLOR_G = "raceLine2Color_g";
 	private const string KEY_RACE_LINE_2_COLOR_B = "raceLine2Color_b";
 	private const string KEY_RACE_LINE_2_COLOR_A = "raceLine2Color_a";
+	private const string KEY_RACE_LINE_TUTORIAL_COLOR_R = "raceLineTutorialColor_r";
+	private const string KEY_RACE_LINE_TUTORIAL_COLOR_G = "raceLineTutorialColor_g";
+	private const string KEY_RACE_LINE_TUTORIAL_COLOR_B = "raceLineTutorialColor_b";
+	private const string KEY_RACE_LINE_TUTORIAL_COLOR_A = "raceLineTutorialColor_a";
 
 
 	public static int ScreenWidth { get; private set; }
@@ -49,9 +53,15 @@ public static class Config {
 			return raceLine2Color;
 		}
 	}
+	public static Color RaceLineTutorialColor {
+		get {
+			return raceLineTutorialColor;
+		}
+	}
 
 	private static Color raceLine1Color = Color.white;
 	private static Color raceLine2Color = Color.white;
+	private static Color raceLineTutorialColor = Color.white;
 
 
 	static Config() {
@@ -86,6 +96,7 @@ public static class Config {
 		RaceCarSpeedPlayer = 10f;
 		raceLine1Color = Color.blue;
 		raceLine2Color = Color.red;
+		raceLineTutorialColor = Color.white;
 
 		try {
 			string configJson = "";
@@ -176,6 +187,19 @@ public static class Config {
 					break;
 				case KEY_RACE_LINE_2_COLOR_A:
 					raceLine2Color.a = TryParseNumberValue(value, raceLine2Color.a);
+					break;
+
+				case KEY_RACE_LINE_TUTORIAL_COLOR_R:
+					raceLineTutorialColor.r = TryParseNumberValue(value, raceLineTutorialColor.r);
+					break;
+				case KEY_RACE_LINE_TUTORIAL_COLOR_G:
+					raceLineTutorialColor.g = TryParseNumberValue(value, raceLineTutorialColor.g);
+					break;
+				case KEY_RACE_LINE_TUTORIAL_COLOR_B:
+					raceLineTutorialColor.b = TryParseNumberValue(value, raceLineTutorialColor.b);
+					break;
+				case KEY_RACE_LINE_TUTORIAL_COLOR_A:
+					raceLineTutorialColor.a = TryParseNumberValue(value, raceLineTutorialColor.a);
 					break;
 
 				default:

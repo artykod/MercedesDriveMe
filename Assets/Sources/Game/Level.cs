@@ -146,7 +146,7 @@ public class Level : MonoBehaviour {
 		tutorialLineRenderer.enabled = true;
 
 		tutorialLineRenderer.sharedMaterial = Instantiate(tutorialLineRenderer.sharedMaterial);
-		tutorialLineRenderer.sharedMaterial.SetColor("_Color", Config.RaceLine1Color);
+		tutorialLineRenderer.sharedMaterial.SetColor("_Color", Config.RaceLineTutorialColor);
 
 		time = Config.RaceTutorialTime;
 		int linePointsCount = 0;
