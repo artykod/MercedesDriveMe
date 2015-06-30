@@ -9,12 +9,10 @@ public class UILapDone : MonoBehaviour {
 
 	private Text text = null;
 
-	private static GameCore.PlayersTypes lastWinner = GameCore.PlayersTypes.Unknown;
-
 	private void Awake() {
 		text = GetComponent<Text>();
 
-		lastWinner = GameCore.PlayersTypes.Unknown;
+		winImage.enabled = false;
     }
 
 	private void Update() {
@@ -29,25 +27,17 @@ public class UILapDone : MonoBehaviour {
 			return;
 		}
 
-		if (car.RaceDone && !Level.RaceDone && lastWinner == GameCore.PlayersTypes.Unknown) {
-			if (GameCore.LastWinner != GameCore.PlayersTypes.Unknown) {
-				if (car.Type == Car.CarType.Blue && (GameCore.LastWinner == GameCore.PlayersTypes.Player2 && car.Type == Car.CarType.Blue)) {
-					winImage.transform.localScale = new Vector3(-1f, -1f, 1f);
-				} else {
-					winImage.gameObject.SetActive(!car.IsBot);
-					text.gameObject.SetActive(false);
-				}
-
-				if (
-					(GameCore.LastWinner == GameCore.PlayersTypes.Player1 && car.Type == Car.CarType.Red) ||
-					(GameCore.LastWinner == GameCore.PlayersTypes.Player2 && car.Type == Car.CarType.Blue)
-				) {
-					lastWinner = GameCore.LastWinner;
-				}
-			}
-        } else {
+		if (
+			car.RaceDone && (
+				(GameCore.LastWinner == GameCore.PlayersTypes.Player1 && car.Type == Car.CarType.Red) ||
+				(GameCore.LastWinner == GameCore.PlayersTypes.Player2 && car.Type == Car.CarType.Blue)
+			)
+		) {
+			gameObject.SetActive(false);
+			winImage.enabled = !car.IsBot;
+		} else {
 			if (car.IsBot) {
-				text.text = "";
+				gameObject.SetActive(false);
 			} else {
 				text.text = "КРУГ " + (car.CurrentLap() + 1) + " / " + Level.TotalLaps();
 			}

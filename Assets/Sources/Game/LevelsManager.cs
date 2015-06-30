@@ -4,6 +4,8 @@ public class LevelsManager : MonoBehaviour {
 
 	public static readonly bool EMPTY_LEVEL = false;
 
+	private const string PREFS_KEY_LAST_RACE_NUMBER = "lastRaceNumber";
+
 	[SerializeField]
 	private BackgroundVisual backgroundVisual = null;
 	[SerializeField]
@@ -28,13 +30,23 @@ public class LevelsManager : MonoBehaviour {
 		}
 	}
 
-	private void Start() {
-		Random.seed = (int)System.DateTime.Now.Ticks;
+	public static void GenerateRandomLevel() {
+		if (levelsCount <= 0) {
+			return;
+		}
 
+		currentLevelIndex = Random.Range(0, levelsCount);
+		Debug.Log("Random level = " + currentLevelIndex);
+	}
+
+	private void Start() {
 		levelsCount = levelsPrefabs.Length;
 
+		Random.seed = (int)System.DateTime.Now.Ticks;
+		Debug.Log("Random.seed = " + Random.seed);
+
 		if (currentLevelIndex < 0) {
-			currentLevelIndex = Random.Range(0, levelsPrefabs.Length);
+			GenerateRandomLevel();
 		}
 
 		LoadSelectedLevel();
@@ -46,7 +58,15 @@ public class LevelsManager : MonoBehaviour {
 		}
 
 		//LoadLevel(lastLevelIndex = 1);
-		LoadLevel(lastLevelIndex = currentLevelIndex);
+
+		int lastRace = PlayerPrefs.GetInt(PREFS_KEY_LAST_RACE_NUMBER, -1);
+		if (lastRace == currentLevelIndex) {
+			GoToNextLevel();
+		}
+		PlayerPrefs.SetInt(PREFS_KEY_LAST_RACE_NUMBER, currentLevelIndex);
+		PlayerPrefs.Save();
+
+        LoadLevel(lastLevelIndex = currentLevelIndex);
 	}
 
 	private void LoadLevel(int index) {
