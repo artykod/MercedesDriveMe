@@ -67,7 +67,7 @@ public class CarControlTouchManager : MonoBehaviour {
 
 		if (OnFrameEnd != null) {
 			OnFrameEnd();
-        }
+		}
 
 		List<int> toRemove = new List<int>();
 		foreach (var i in touches) {
@@ -87,7 +87,7 @@ public class CarControlTouchManager : MonoBehaviour {
 	}
 
 	private void TouchesMoved(object sender, TouchEventArgs e) {
-        foreach (var i in e.Touches) {
+		foreach (var i in e.Touches) {
 			if (touches.ContainsKey(i.Id)) {
 				TouchInfo touchInfo = touches[i.Id];
 				touchInfo.isTouch = true;
