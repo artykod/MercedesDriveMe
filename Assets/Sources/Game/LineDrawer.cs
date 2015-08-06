@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using TouchInfo = TouchManager.TouchInfo;
+using TouchInfo = CarControlTouchManager.TouchInfo;
 
 public class LineDrawer : MonoBehaviour {
 
@@ -76,6 +76,8 @@ public class LineDrawer : MonoBehaviour {
 		line.sharedMaterial = Instantiate(line.sharedMaterial);
 		lineVerticesCount = 0;
 		line.SetVertexCount(lineVerticesCount);
+
+		CarControlTouchManager.OnFrameEnd += UpdateFrame;
     }
 
 	public TouchInfo TouchInfo {
@@ -90,8 +92,8 @@ public class LineDrawer : MonoBehaviour {
             }
 		}
 	}
-
-	private void Update() {
+	
+	private void UpdateFrame() {
 		if (!Level.LevelStarted) {
 			return;
 		}
@@ -103,7 +105,7 @@ public class LineDrawer : MonoBehaviour {
 		TouchInfo touchInfoLocal = TouchInfo;
 
 		if (touchInfoLocal == null) {
-			touchInfoLocal = TouchManager.FindFreeTouchInfo();
+			touchInfoLocal = CarControlTouchManager.FindFreeTouchInfo();
 		}
 
 		if (touchInfoLocal == null) {
@@ -130,7 +132,6 @@ public class LineDrawer : MonoBehaviour {
 		}
 
 		if (isTouchDown) {
-
 			bool carRetrace = false;
 			Car car = null;
 			Collider2D[] colliders = null;
