@@ -80,6 +80,10 @@ public class LineDrawer : MonoBehaviour {
 		CarControlTouchManager.OnFrameEnd += UpdateFrame;
     }
 
+	private void OnDestroy() {
+		CarControlTouchManager.OnFrameEnd -= UpdateFrame;
+	}
+
 	public TouchInfo TouchInfo {
 		get {
 			return touchInfo;
