@@ -107,7 +107,7 @@ public static class Config {
 			configPath += "../../";
 #endif
 			Debug.Log("Config path: " + configPath + FILE_NAME);
-			using (StreamReader sr = new StreamReader(configPath  + FILE_NAME)) {
+			using (StreamReader sr = File.OpenText(configPath  + FILE_NAME)) {
 				configJson = sr.ReadToEnd();
 			}
 #else
