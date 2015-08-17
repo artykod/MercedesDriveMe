@@ -639,6 +639,8 @@ GameObject:
   - 4: {fileID: 540933916}
   - 114: {fileID: 540933915}
   - 114: {fileID: 540933914}
+  - 114: {fileID: 540933918}
+  - 114: {fileID: 540933917}
   m_Layer: 0
   m_Name: inputs
   m_TagString: Untagged
@@ -690,6 +692,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 273651783}
   m_RootOrder: 0
+--- !u!114 &540933917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 540933913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 175516946, guid: bb6056dc800c1084da7273cb9f23f5cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advancedProps: 0
+  TouchTags:
+    tagList:
+    - Touch
+  MouseTags:
+    tagList:
+    - Mouse
+  PenTags:
+    tagList:
+    - Pen
+--- !u!114 &540933918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 540933913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1496140412, guid: bb6056dc800c1084da7273cb9f23f5cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advancedProps: 0
+  DisableMouseInputInBuilds: 0
+  Tags:
+    tagList:
+    - Touch
 --- !u!1 &1325181999
 GameObject:
   m_ObjectHideFlags: 0
